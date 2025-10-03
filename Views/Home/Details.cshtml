@@ -1,0 +1,357 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Dashboard Details";
+    var type = Context.Request.Query["type"].ToString();
+
+    var empidClaim = User.FindFirst("EmpID")?.Value ?? "";
+    var designationClaim = User.FindFirst("Designation")?.Value ?? "";
+    var irbClaim = User.FindFirst("IRB")?.Value ?? "";
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+<div class="container-fluid mt-3">
+    <!-- ✅ Filter/Search Bar -->
+    <div class="row mb-3">
+        <div class="col-md-3 col-12 mb-2">
+            <select id="filterType" class="form-select">
+                <option value="all">All</option>
+                <option value="empid">EmpID</option>
+                <option value="name">Name</option>
+            </select>
+        </div>
+        <div class="col-md-6 col-12 mb-2">
+            <input type="text" id="filterInput" class="form-control" placeholder="Search...">
+        </div>
+        <div class="col-md-3 col-12 mb-2 text-end">
+            <button class="btn btn-secondary w-100 w-md-auto" onclick="clearFilter()">Clear Filter</button>
+        </div>
+    </div>
+
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle" id="groupsTable">
+            <thead class="table-info">
+                <tr>
+                    <th>EmpID</th>
+                    <th>EmpName</th>
+                    <th>IRB</th>
+                    <th>IRB Name</th>
+                    <th>Site</th>
+                    <th>Project</th>
+                    <th>Submission Date</th>
+                    <th>Total Claim</th>
+                    <th>Total Sanctioned</th>
+                    <th>Status</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Group Modal -->
+<div class="modal fade" id="groupModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="groupTitle" class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle" id="itemsTable">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Travel</th>
+                                <th>Qty</th>
+                                <th>Fellow</th>
+                                <th>Claim</th>
+                                <th>Bill</th>
+                                <th>Sanctioned</th>
+                                <th>SpecialApprove</th>
+                                <th>Row Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer flex-wrap">
+                <button id="acceptGroupBtn" class="btn btn-success me-2 mb-2">Submit</button>
+                <button id="rejectGroupBtn" class="btn btn-danger me-2 mb-2">Reject All</button>
+                <button class="btn btn-secondary mb-2" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/axios/dist/axios.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const type = "@type";
+        const empid = "@empidClaim";
+        const designation = "@designationClaim".toUpperCase();
+        const irb = "@irbClaim";
+
+        // Track row state
+        let rowState = {};
+        let currentEmpID, currentSubmissionDate, currentProjectCode, ExpenseBillId1;
+        let allData = []; // Store all loaded data for filtering
+
+        function canAct(irbFromApi) {
+            return designation === "HR" || designation === "AGM" || designation === "ACCOUNTS" || empid === irbFromApi;
+        }
+
+        function renderStatus(status, rejection) {
+            if (rejection === 'reject') return 'Rejected';
+            if (status === '0') return 'Pending';
+            if (status === '1') return 'Pending at HR';
+            if (status === '2') return 'Pending at AGM';
+            if (status === '3') return 'Pending at Accounts';
+            if (status === '4') return 'Accepted';
+            return status ?? '';
+        }
+
+        async function loadGroups() {
+            const emp = empid;
+            const res = await axios.get(`/api/dashboard/details?empid=${emp}&designation=${designation}&type=${type}`);
+            allData = res.data; // store original data
+            renderTable(allData);
+        }
+
+        function renderTable(data) {
+            const tbody = document.querySelector('#groupsTable tbody');
+            tbody.innerHTML = '';
+
+            data.forEach(g => {
+                const tr = document.createElement('tr');
+                tr.style.cursor = "pointer";
+
+                tr.onclick = () => {
+                    ExpenseBillId1 = g.expenseId;
+                    openGroup(g.empID, g.submissionDate, g.projectCode, g.irb);
+                };
+
+                tr.innerHTML = `
+                    <td>${g.empID}</td>
+                    <td>${g.empName}</td>
+                    <td>${g.irb ?? ''}</td>
+                    <td>${g.irbName ?? ''}</td>
+                    <td>${g.siteName ?? ''}</td>
+                    <td>${g.projectCode ?? ''}</td>
+                    <td>${g.submissionDate ? new Date(g.submissionDate).toLocaleDateString() : ''}</td>
+                    <td>${g.totalClaimAmount}</td>
+                    <td>${g.totalSanctionedAmount}</td>
+                    <td>${renderStatus(g.status, g.rejection)}</td>
+                    <td class="action-cell text-center"></td>
+                `;
+                tbody.appendChild(tr);
+
+                if (g.status === '0' && g.rejection !== "reject") {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'btn btn-sm btn-danger';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteExpense(g.expenseId);
+                    });
+
+                    const actionCell = tr.querySelector('.action-cell');
+                    actionCell.appendChild(deleteBtn);
+                }
+            });
+        }
+
+   // Filter function
+function applyFilter() {
+    const filterType = document.getElementById('filterType').value;
+    const filterValue = document.getElementById('filterInput').value.toLowerCase();
+
+    const filtered = allData.filter(row => {
+        if (filterType === 'all') {
+            return (
+                row.empID.toLowerCase().includes(filterValue) ||
+                row.empName.toLowerCase().includes(filterValue)
+            );
+        } else if (filterType === 'empid') {
+            return row.empID.toLowerCase().includes(filterValue);
+        } else if (filterType === 'name') {
+            return row.empName.toLowerCase().includes(filterValue);
+        }
+        return true;
+    });
+
+    renderTable(filtered);
+}
+
+// Clear filter function
+function clearFilter() {
+    document.getElementById('filterType').value = 'all';
+    document.getElementById('filterInput').value = '';
+    renderTable(allData);
+}
+
+// Event listeners
+document.getElementById('filterInput').addEventListener('input', applyFilter);
+document.getElementById('filterType').addEventListener('change', applyFilter);
+
+
+        // DELETE, GROUP MODAL, REJECT/SPECIAL functions remain the same
+        async function deleteExpense(expenseId) {
+            if (!confirm("Are you sure you want to delete this expense?")) return;
+
+            try {
+                const res = await axios.delete(`/api/dashboard/delete-expense/${expenseId}`);
+                if (res.status === 200) {
+                    alert(res.data.message || "Expense deleted successfully");
+                    loadGroups();
+                } else {
+                    alert("Failed to delete expense. Please try again.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error occurred while deleting the expense.");
+            }
+        }
+
+        async function openGroup(empId, submissionDate, projectCode, irb) {
+            currentEmpID = empId;
+            currentSubmissionDate = submissionDate;
+            currentProjectCode = projectCode;
+
+            const d = new Date(submissionDate);
+            const dateStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
+
+            const res = await axios.get(`/api/dashboard/groupitems?empid=${empId}&submissionDate=${dateStr}&expenseId=${ExpenseBillId1}`);
+            const items = res.data;
+
+            const tbody = document.querySelector('#itemsTable tbody');
+            tbody.innerHTML = '';
+            rowState = {};
+
+            items.forEach(it => {
+                rowState[it.id] = {
+                    rejected: it.rejection === "reject",
+                    special: false,
+                    newAmount: it.sanctionedAmount ?? 0
+                };
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-id', it.id);
+                if (rowState[it.id].rejected) tr.classList.add("table-danger");
+
+                tr.innerHTML = `
+                    <td>${it.dateOfExpense ? new Date(it.dateOfExpense).toLocaleDateString() : ''}</td>
+                    <td>${it.typeOfExpense ?? ''}</td>
+                    <td>${it.travelLocation ?? ''}</td>
+                    <td>${it.quantity ?? ''}</td>
+                    <td>${it.fellowMembers ?? ''}</td>
+                    <td>${it.claimAmount ?? 0}</td>
+                    <td>${it.billDocument ? '<button class="btn btn-sm btn-outline-primary" onclick="viewBill('+it.id+')">View</button>' : ''}</td>
+                    <td><input type="number" class="form-control form-control-sm" value="${rowState[it.id].newAmount}" onchange="updateSanctioned(${it.id}, this.value)" /></td>
+                    <td>${canAct(irb) && (it.sanctionedAmount ?? 0) < (it.claimAmount ?? 0) ? `<button class="btn btn-sm btn-warning" onclick="toggleSpecial(${it.id}, ${it.claimAmount})">Special Approve</button>` : ''}</td>
+                    <td><button class="btn btn-sm ${rowState[it.id].rejected ? 'btn-success' : 'btn-danger'}" onclick="toggleReject(${it.id}, this)">${rowState[it.id].rejected ? 'Accept' : 'Reject'}</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('groupTitle').innerText = `Group - ${empId} / ${projectCode} / ${new Date(dateStr).toLocaleDateString()}`;
+
+            const acceptBtn = document.getElementById('acceptGroupBtn');
+            const rejectBtn = document.getElementById('rejectGroupBtn');
+
+            if (canAct(irb)) {
+                if (type === 'rejected') { acceptBtn.style.display = 'inline-block'; rejectBtn.style.display = 'none'; }
+                else if (type === 'approved') { acceptBtn.style.display = 'none'; rejectBtn.style.display = 'none'; }
+                else { acceptBtn.style.display = 'inline-block'; rejectBtn.style.display = 'inline-block'; }
+            } else {
+                acceptBtn.style.display = 'none';
+                rejectBtn.style.display = 'none';
+            }
+
+            new bootstrap.Modal(document.getElementById('groupModal')).show();
+        }
+
+        function toggleReject(id, btn) {
+            const tr = btn.closest("tr");
+            rowState[id].rejected = !rowState[id].rejected;
+
+            if (rowState[id].rejected) tr.classList.add("table-danger");
+            else tr.classList.remove("table-danger");
+
+            btn.classList.toggle("btn-danger");
+            btn.classList.toggle("btn-success");
+            btn.innerText = rowState[id].rejected ? "Accept" : "Reject";
+        }
+
+        function toggleSpecial(id, claimAmount) {
+            const tr = document.querySelector(`#itemsTable tr[data-id='${id}']`);
+            const sanctionedInput = tr.querySelector("input[type='number']");
+            rowState[id].special = !rowState[id].special;
+
+            if (rowState[id].special) {
+                rowState[id].newAmount = claimAmount;
+                tr.style.backgroundColor = "lightyellow";
+                sanctionedInput.value = claimAmount;
+            } else {
+                rowState[id].newAmount = 0;
+                tr.style.backgroundColor = "";
+                sanctionedInput.value = 0;
+            }
+        }
+
+        function updateSanctioned(id, val) {
+            rowState[id].newAmount = parseFloat(val);
+        }
+
+        function viewBill(id) {
+            window.open(`/Expenses/ViewBill/${id}`, "_blank");
+        }
+
+        // Accept group
+        document.getElementById('acceptGroupBtn').onclick = async () => {
+            const rows = Object.keys(rowState).map(k => ({
+                ItemId: parseInt(k),
+                IsRejected: rowState[k].rejected,
+                IsSpecial: rowState[k].special,
+                NewSanctionedAmount: rowState[k].newAmount
+            }));
+
+            await axios.post('/api/dashboard/accept-group', {
+                EmpID: currentEmpID,
+                SubmissionDate: currentSubmissionDate,
+                ProjectCode: currentProjectCode,
+                ActionBy: empid,
+                ExpenseId: ExpenseBillId1,
+                Designation: designation,
+                Rows: rows
+            });
+
+            bootstrap.Modal.getInstance(document.getElementById('groupModal')).hide();
+            loadGroups();
+        };
+
+        // Reject group
+        document.getElementById('rejectGroupBtn').onclick = async () => {
+            await axios.post('/api/dashboard/reject-group', {
+                EmpID: currentEmpID,
+                SubmissionDate: currentSubmissionDate,
+                ProjectCode: currentProjectCode,
+                ActionBy: empid,
+                ExpenseId: ExpenseBillId1
+            });
+
+            bootstrap.Modal.getInstance(document.getElementById('groupModal')).hide();
+            loadGroups();
+        };
+
+        // Initial load
+        loadGroups();
+
+    </script>
+}

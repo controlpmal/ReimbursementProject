@@ -1,0 +1,122 @@
+﻿@{
+    ViewData["Title"] = "Pending Submissions";
+}
+
+<script>
+    if (localStorage.getItem("isLoggedIn") !== "true") {
+        window.location.href = "/Home/Login";
+    }
+</script>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Submissions</h3>
+        <div>
+            <select id="modeSelect" class="form-select form-select-sm">
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table id="groupedTable" class="table table-hover table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Emp Name</th>
+                    <th>IRB</th>
+                    <th>IRB Name </th>
+                    <th>Site</th>
+                    <th>Project</th>
+                    <th>Submission Date</th>
+                    <th>Total Claim</th>
+                    <th>Total Sanctioned</th>
+                    <th>Rows</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            const empid = localStorage.getItem("EmpID");
+            const designation = localStorage.getItem("Designation");
+            const tbody = $("#groupedTable tbody");
+
+            $("#modeSelect").on("change", loadData);
+
+            function statusLabel(status) {
+                return status === "0" ? "Pending on IRB" :
+                       status === "1" ? "Pending on HR" :
+                       status === "2" ? "Pending on AGM" :
+                       status === "3" ? "Pending on Accounts" :
+                       status === "4" ? "Approved" : "Unknown";
+            }
+
+            async function loadData() {
+                const mode = $("#modeSelect").val();
+                tbody.empty();
+                const res = await axios.get("/api/ExpenseAdmin/grouped", { params: { empid, designation, mode }});
+                const list = res.data || [];
+                if (!list.length) {
+                    tbody.append("<tr><td colspan='12' class='text-center'>No records</td></tr>");
+                    return;
+                }
+                for (const g of list) {
+                    const highlight = (g.TotalClaim > g.TotalSanctioned) ? "style='background:#fff8c6;'" : "";
+                    const tr = $(`
+                        <tr ${highlight}>
+                            <td>${g.EmpID}</td>
+                            <td>${g.EmpName}</td>
+                            <td>${g.IRB}</td>
+                            <td>${g.IRBName}</td>
+                            <td>${g.SiteName}</td>
+                            <td>${g.ProjectCode}</td>
+                            <td>${(g.SubmissionDate ? new Date(g.SubmissionDate).toLocaleDateString() : "")}</td>
+                            <td>${g.TotalClaim?.toFixed(2)}</td>
+                            <td>${g.TotalSanctioned?.toFixed(2)}</td>
+                            <td>${g.RowCount}</td>
+                            <td>${statusLabel(g.Status)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary btn-view">View</button>
+                                <button class="btn btn-sm btn-danger btn-delete">Delete</button>
+                                ${mode === "pending" ? `<button class="btn btn-sm btn-warning btn-reject">Reject</button>` : ""}
+                            </td>
+                        </tr>
+                    `);
+
+                    tr.find(".btn-view").click(() => {
+                        const s = encodeURIComponent(g.SubmissionDate);
+                        // build details url with query params
+                        const url = `/Expense/Details?empid=${encodeURIComponent(g.EmpID)}&site=${encodeURIComponent(g.SiteName)}&project=${encodeURIComponent(g.ProjectCode)}&submissionDate=${encodeURIComponent(g.SubmissionDate)}`;
+                        window.location.href = url;
+                    });
+
+                    tr.find(".btn-delete").click(async () => {
+                        if (!confirm("Delete all rows for this submission?")) return;
+                        await axios.delete("/api/ExpenseAdmin/grouped", { params: { empid: g.EmpID, site: g.SiteName, project: g.ProjectCode, submissionDate: g.SubmissionDate }});
+                        loadData();
+                    });
+
+                    tr.find(".btn-reject").click(async () => {
+                        if (!confirm("Reject this submission?")) return;
+                        await axios.post("/api/ExpenseAdmin/reject", { EmpID: g.EmpID, SiteName: g.SiteName, ProjectCode: g.ProjectCode, SubmissionDate: g.SubmissionDate });
+                        loadData();
+                    });
+
+                    tbody.append(tr);
+                }
+            }
+
+            // initial load
+            loadData();
+        })();
+    </script>
+}

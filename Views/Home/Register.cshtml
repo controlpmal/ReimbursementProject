@@ -1,0 +1,112 @@
+﻿@model ReimbursementProject.Models.EmployeeDetails
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient bg-success text-white text-center rounded-top-4">
+                    <h4 class="mb-0"><i class="fas fa-user-plus"></i> Employee Registration</h4>
+                </div>
+                <div class="card-body p-4">
+                    <div id="registerMessage" class="text-center mb-3 fw-bold"></div>
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-id-badge"></i> Employee ID</label>
+                                <input type="text" id="EmpID" placeholder="Enter Employee ID" class="form-control rounded-pill" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-user"></i> Name</label>
+                                <input type="text" id="EmpName" placeholder="Enter Name" class="form-control rounded-pill" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-briefcase"></i> Designation</label>
+                                <input type="text" id="Designation" placeholder="Enter Designation" class="form-control rounded-pill" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-building-columns"></i> Department</label>
+                                <input type="text" id="Dept" placeholder="Enter Department" class="form-control rounded-pill" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-key"></i> Password</label>
+                                <input type="password" id="Password" placeholder="Enter Password" class="form-control rounded-pill" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold"><i class="fas fa-key"></i> Confirm Password</label>
+                                <input type="password" id="ConfirmPassword" placeholder="Confirm Password" class="form-control rounded-pill" required />
+                            </div>
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-success rounded-pill py-2 fw-semibold">
+                                <i class="fas fa-paper-plane"></i> Register
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a class="btn btn-outline-secondary rounded-pill px-4" asp-controller="Home" asp-action="Login">
+                            <i class="fas fa-sign-in-alt"></i> Back to Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $("#registerForm").on("submit", function (e) {
+                e.preventDefault();
+
+                const empId = $("#EmpID").val().trim();
+                const empName = $("#EmpName").val().trim();
+                const designation = $("#Designation").val().trim();
+                const dept = $("#Dept").val().trim();
+                const password = $("#Password").val().trim();
+                const confirmPassword = $("#ConfirmPassword").val().trim();
+                const msgBox = $("#registerMessage");
+
+                msgBox.removeClass("text-success text-danger").text("");
+
+                // ✅ Check password match
+                if (password !== confirmPassword) {
+                    msgBox.addClass("text-danger").text("Passwords do not match!");
+                    return;
+                }
+
+                $.ajax({
+                    url: "/api/Employee/Register",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        EmpID: empId,
+                        EmpName: empName,
+                        Designation: designation,
+                        Dept: dept,
+                        Password: password
+                    }),
+                    success: function (res) {
+                        msgBox.removeClass("text-danger").addClass("text-success").text(res.message);
+                        $("#registerForm")[0].reset();
+                    },
+                    error: function (xhr) {
+                        msgBox.removeClass("text-success").addClass("text-danger")
+                            .text(xhr.responseJSON?.message || "Error occurred");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,55 @@
+﻿@model List<ReimbursementProject.Models.ExpenseLogBook>
+
+@{
+    ViewData["Title"] = "Edit Expense";
+}
+
+<h3>Edit Expense</h3>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Type of Expense</th>
+                <th>Quantity</th>
+                <th>Fellow Members</th>
+                <th>Claim Amount</th>
+                <th>Bill Document</th>
+                <th>Site Name</th>
+                <th>Project Code</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input asp-for="@Model[i].TypeOfExpense" class="form-control" />
+                        <input type="hidden" asp-for="@Model[i].ID" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].Quantity" class="form-control" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].FellowMembers" class="form-control" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].ClaimAmount" class="form-control" />
+                    </td>
+                    <td>
+                        <input type="file" name="BillDocument_@i" class="form-control" />
+                        <span>@Model[i].BillFileName</span>
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].SiteName" class="form-control" />
+                    </td>
+                    <td>
+                        <input asp-for="@Model[i].ProjectCode" class="form-control" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

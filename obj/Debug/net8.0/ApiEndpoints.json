@@ -1,0 +1,651 @@
+[
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "AcceptGroup",
+    "RelativePath": "api/Dashboard/accept-group",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "req",
+        "Type": "ReimbursementProject.Controllers.AcceptGroupRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "GetApprovedCount",
+    "RelativePath": "api/Dashboard/approved",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "designation",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "DeleteExpense",
+    "RelativePath": "api/Dashboard/delete-expense/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "GetGroupedDetails",
+    "RelativePath": "api/Dashboard/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "designation",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "GetGroupItems",
+    "RelativePath": "api/Dashboard/groupitems",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "submissionDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "expenseId",
+        "Type": "System.Int64",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "GetPendingCount",
+    "RelativePath": "api/Dashboard/pending",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "designation",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "RejectGroup",
+    "RelativePath": "api/Dashboard/reject-group",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "req",
+        "Type": "ReimbursementProject.Controllers.RejectGroupRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "GetRejectedCount",
+    "RelativePath": "api/Dashboard/rejected",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "designation",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "SpecialApprove",
+    "RelativePath": "api/Dashboard/special-approve",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "ReimbursementProject.Controllers.DashboardController\u002BSpecialApproveDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "DeleteEmployee",
+    "RelativePath": "api/Employee/{empId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "EditEmployee",
+    "RelativePath": "api/Employee/{empId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "updated",
+        "Type": "ReimbursementProject.Models.EmployeeDetails",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetAllEmployees",
+    "RelativePath": "api/Employee/all",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "ApproveEmployee",
+    "RelativePath": "api/Employee/approve/{empId}",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "updatedEmp",
+        "Type": "ReimbursementProject.Models.EmployeeDetails",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "CheckDuplicate",
+    "RelativePath": "api/Employee/check-duplicate",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "typeOfExpense",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "dateOfExpense",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "DoLogin",
+    "RelativePath": "api/Employee/DoLogin",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "LoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "getEmployeeName",
+    "RelativePath": "api/Employee/employeeName",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetEmployees",
+    "RelativePath": "api/Employee/employees",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetEmployees1",
+    "RelativePath": "api/Employee/employees1",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetExpenseLimits",
+    "RelativePath": "api/Employee/expenseLimits",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "level",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "withBill",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetExpenseTypes",
+    "RelativePath": "api/Employee/expenseTypes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetHistory",
+    "RelativePath": "api/Employee/history",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "Logout",
+    "RelativePath": "api/Employee/Logout",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetNewEmployees",
+    "RelativePath": "api/Employee/new",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "GetPendingCount",
+    "RelativePath": "api/Employee/pendingCount",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "Register",
+    "RelativePath": "api/Employee/Register",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "emp",
+        "Type": "ReimbursementProject.Models.EmployeeDetails",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "SaveExpenses",
+    "RelativePath": "api/Employee/save",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "expenses",
+        "Type": "System.Collections.Generic.List\u00601[[ReimbursementProject.Models.ExpenseLogBook, ReimbursementProject, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "Submit",
+    "RelativePath": "api/Employee/submit",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.EmployeeController",
+    "Method": "getToatalamount",
+    "RelativePath": "api/Employee/totalAmount",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "AcceptSpecial",
+    "RelativePath": "api/ExpenseAdmin/accept-special",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "ReimbursementProject.Controllers.Api.ExpenseAdminController\u002BGroupActionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "Approve",
+    "RelativePath": "api/ExpenseAdmin/approve",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "ReimbursementProject.Controllers.Api.ExpenseAdminController\u002BApproveDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "GetDetails",
+    "RelativePath": "api/ExpenseAdmin/details",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "site",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "project",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "submissionDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "GetFile",
+    "RelativePath": "api/ExpenseAdmin/file/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int64",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "GetGrouped",
+    "RelativePath": "api/ExpenseAdmin/grouped",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "designation",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "mode",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "DeleteGrouped",
+    "RelativePath": "api/ExpenseAdmin/grouped",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "empid",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "site",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "project",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "submissionDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "RejectGrouped",
+    "RelativePath": "api/ExpenseAdmin/reject",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "ReimbursementProject.Controllers.Api.ExpenseAdminController\u002BGroupActionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.Api.ExpenseAdminController",
+    "Method": "Unreject",
+    "RelativePath": "api/ExpenseAdmin/unreject",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "ReimbursementProject.Controllers.Api.ExpenseAdminController\u002BGroupActionDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ReimbursementProject.Controllers.DashboardController",
+    "Method": "ViewBill",
+    "RelativePath": "Expenses/ViewBill/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

@@ -1,0 +1,173 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ReimbursementProject</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ReimbursementProject.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <style>
+        /* Sticky, modern navbar */
+        .navbar-custom {
+            background: linear-gradient(45deg, #007bff, #00c851);
+            padding: 0.6rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+            .navbar-custom .nav-link {
+                color: #fff !important;
+                font-weight: 500;
+                transition: 0.3s;
+                border-radius: 6px;
+                padding: 0.6rem 1rem;
+            }
+
+                .navbar-custom .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.15);
+                    color: #ffe600 !important;
+                    transform: translateY(-2px);
+                }
+
+        /* Bigger, attractive brand */
+        .navbar-brand span {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .user-info {
+            color: #ffe600;
+            font-weight: 600;
+        }
+
+        .navbar-toggler {
+            border: none;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark navbar-custom shadow">
+            <div class="container-fluid">
+
+                <!-- Logo + Brand -->
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/pioneerimg.jpg" alt="Logo"
+                         style="height:45px; width:auto; border-radius:8px;" class="me-2 shadow-sm" />
+                    <span>Reimbursement</span>
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Navigation links (center-left, auto-shift if hidden) -->
+                    <ul class="navbar-nav ms-auto me-3 gap-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Home" asp-action="Index">
+                                    <i class="fas fa-coins"></i> Reimbursement
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Home" asp-action="Dashboard">
+                                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                                </a>
+                            </li>
+
+                            @* ✅ Only for Accounts designation *@
+                            @if ((User.FindFirst("Designation")?.Value ?? "").ToUpper() == "ACCOUNTS")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link"
+                                       asp-controller="EmployeeAccount" asp-action="Create">
+                                        <i class="fas fa-users"></i> Employee Account
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <!-- Right side: login/logout -->
+                    <ul class="navbar-nav">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item me-3 user-info d-flex align-items-center">
+                                <i class="fas fa-user me-1"></i>
+                                @(User.FindFirst("EmpName")?.Value)
+                            </li>
+                            <li class="nav-item">
+                                <a href="javascript:void(0);" class="nav-link text-white" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Login">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-3">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted text-center py-2">
+        <div class="container">
+            &copy; 2025 - ReimbursementProject -
+            <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        async function logout() {
+            try {
+                const response = await axios.post("/api/Employee/Logout");
+                if (response.data.success) {
+                    window.location.href = "/Home/Login";
+                } else {
+                    alert("Logout failed. Try again.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error while logging out.");
+            }
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

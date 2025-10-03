@@ -1,0 +1,534 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Expense Entry";
+
+    // ✅ get logged-in values from Claims
+    var EmpID = User.FindFirst("EmpID")?.Value ?? "";
+    var EmpName = User.FindFirst("EmpName")?.Value ?? "";
+    var Level = User.FindFirst("Level")?.Value ?? "";
+    var IRB = User.FindFirst("IRB")?.Value ?? "";
+}
+
+@if (!(User.Identity?.IsAuthenticated ?? false))
+{
+    <script>
+        window.location.href = "/Home/Login";
+    </script>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Create Expense Entries</h5>
+    </div>
+    <div class="card-body">
+        <!-- Top inputs: SiteName and ProjectCode -->
+        <div class="row g-2 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label">Site Name</label>
+                <input id="siteName" class="form-control" placeholder="Enter site name" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Project Code</label>
+                <input id="projectCode" class="form-control" placeholder="Enter project code" />
+            </div>
+        </div>
+
+      
+
+        <!-- Container for dynamic expense rows -->
+        <div id="expenseRows" class="mt-4"></div>
+        <!-- Add panel -->
+        <div id="addPanel" class="border rounded p-3 mt-3 expense-panel bg-info">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">From Date</label>
+                    <input id="fromDate" type="date" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">To Date</label>
+                    <input id="toDate" type="date" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Expense Type</label>
+                    <select id="expenseTypeSelect" class="form-select"></select>
+                </div>
+                <div class="col-md-2 text-end">
+                    <button id="btnAddRange" class="btn btn-success w-100">Add Rows</button>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Submit Row -->
+        <div class="d-flex justify-content-between mt-3 flex-wrap ">
+            <div class="mb-2">
+                <small class="text-muted">Tip: Select fellow members from suggestions only.</small>
+            </div>
+            <div class="d-flex gap-2">
+                <button id="btnClear" class="btn btn-outline-danger">Clear All</button>
+                <button id="btnSubmit" class="btn btn-primary">Submit All</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Responsive row styling -->
+<style>
+    .expense-row {
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        background: #fff;
+    }
+
+    @@media (max-width: 768px) {
+        .expense-row .row > div
+
+    {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    }
+
+    .autocomplete-list {
+        cursor: pointer;
+    }
+
+
+    .expense-row {
+        border: 1px solid #e3e6ef;
+        border-radius: 12px;
+        background: linear-gradient(180deg, #ffffff, #f9fafc);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        transition: all 0.2s ease-in-out;
+        padding: 15px;
+        position: relative;
+        overflow: hidden;
+    }
+
+
+        /* Header strip at top */
+        .expense-row::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 5px;
+            width: 100%;
+            border-radius: 12px 12px 0 0;
+            background: linear-gradient(to right, #007bff, #00c6ff);
+        }
+
+        /* Labels smaller, lighter */
+        .expense-row .form-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #5f6368;
+            margin-bottom: 2px;
+        }
+
+        /* Inputs rounded & compact */
+        .expense-row input,
+        .expense-row select {
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Fellow members section */
+        .expense-row .fellows-cell {
+            border: 1px dashed #c9d2e1;
+        }
+
+        .expense-row .selected-ids {
+            font-size: 0.8rem;
+            color: #007bff;
+        }
+
+        /* Buttons inside row */
+        .expense-row .btn-delete {
+            border-radius: 50px;
+            padding: 4px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Separation between Line 1 & Line 2 */
+        .expense-row .row + .row {
+            border-top: 1px dashed #dee2e6;
+            margin-top: 12px;
+            padding-top: 12px;
+        }
+
+
+    /* Add gradient strip to addPanel */
+ 
+
+
+</style>
+
+@section Scripts {
+    <script>
+        $(function () {
+            const expenseTypesApi = "/api/Employee/expenseTypes";
+            const employeesApi = "/api/Employee/employees";
+            const expenseLimitsApi = "/api/Employee/expenseLimits";
+            const submitApi = "/api/Employee/submit";
+
+            const EmpID = "@EmpID";
+            const Level = "@Level";
+            const IRB = "@IRB";
+
+            let expenseTypes = [];
+            let employees = [];
+            let nextRowId = 0;
+
+            function formatDateIso(d) {
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, "0");
+                const dd = String(d.getDate()).padStart(2, "0");
+                return `${yyyy}-${mm}-${dd}`;
+            }
+            function isTravelType(t) {
+                if (!t) return false;
+                const tt = t.toUpperCase();
+                return tt.includes("TRAVEL BIKE") || tt.includes("TRAVEL CAR");
+            }
+            function isTransportType(t) {
+                if (!t) return false;
+                const tt = t.toUpperCase();
+                return tt.includes("PUBLIC TRANSPORT");
+            }
+
+            // load dropdowns
+            axios.get(expenseTypesApi).then(res => {
+                expenseTypes = res.data || [];
+                const sel = $("#expenseTypeSelect").empty();
+                sel.append(`<option value="">-- Select type --</option>`);
+                expenseTypes.forEach(e => {
+                    const label = e.typeOfExpense ?? e.TypeOfExpense ?? e.Type ?? e;
+                    sel.append(`<option value="${label}">${label}</option>`);
+                });
+            });
+            axios.get(employeesApi).then(res => { employees = res.data || []; });
+
+            // add rows
+            $("#btnAddRange").click(async () => {
+                const from = $("#fromDate").val();
+                const to = $("#toDate").val();
+                const type = $("#expenseTypeSelect").val();
+                if (!from || !type) { alert("Choose from date and expense type."); return; }
+
+                const fromD = new Date(from);
+                const toD = to ? new Date(to) : fromD;
+                if (toD < fromD) { alert("To date cannot be before From date."); return; }
+
+                       for (let dt = new Date(fromD); dt <= toD; dt.setDate(dt.getDate() + 1)) {
+            const dateIso = formatDateIso(dt);
+
+            // ✅ First check duplicates in current page
+            let existsInPage = false;
+            $("#expenseRows .expense-row").each(function () {
+                const d = $(this).find(".date-cell").val();
+                const t = $(this).find(".type-cell").val();
+                if (d === dateIso && t === type) {
+                    existsInPage = true;
+                    return false; // break loop
+                }
+            });
+
+            if (existsInPage) {
+                alert(`Row already exists in page for ${dateIso} (${type}). Skipped.`);
+                continue;
+            }
+
+            // ✅ Then check duplicates in DB
+            try {
+                const res = await axios.get("/api/Employee/check-duplicate", {
+                    params: { empId: EmpID, typeOfExpense: type, dateOfExpense: dateIso }
+                });
+                if (res.data.exists) {
+                    alert(`Duplicate in database for ${dateIso} (${type}). Skipped.`);
+                } else {
+                    addRow(dateIso, type);
+                }
+            } catch (err) { console.error(err); }
+        }
+
+            });
+
+            // add row (card UI)
+            function addRow(dateIso, type) {
+                const rowId = nextRowId++;
+                const row = $(`
+                    <div class="expense-row card p-3 mb-3 shadow-sm" data-rowid="${rowId}">
+                        <!-- Line 1 -->
+                        <div class="row g-2">
+                            <div class="col-md-2">
+                                <label class="form-label small">Date</label>
+                                <input class="form-control form-control-sm date-cell" type="text" value="${dateIso}" readonly />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Type</label>
+                                <input class="form-control form-control-sm type-cell" type="text" value="${type}" readonly />
+                            </div>
+                            <div class="col-md-2 travel-fields  kmfield">
+                                <label class="form-label small">KM</label>
+                                <input class="form-control form-control-sm km-cell" type="number" min="0" disabled />
+                            </div>
+                            <div class="col-md-2 travel-fields travelfield">
+                                <label class="form-label small">From</label>
+                                <input class="form-control form-control-sm from-cell" type="text" placeholder="From" />
+                            </div>
+                            <div class="col-md-2 travel-fields  travelfield">
+                                <label class="form-label small">To</label>
+                                <input class="form-control form-control-sm to-cell" type="text" placeholder="To" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Quantity</label>
+                                <input class="form-control form-control-sm qty-cell" type="number" min="0" value="1" />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label small">Fellow Members</label>
+                                <input class="form-control form-control-sm fellows-cell" type="text" placeholder="Type to search..." />
+                                <div class="small text-muted mt-1">Selected: <span class="selected-ids"></span></div>
+                            </div>
+                        </div>
+
+                        <!-- Line 2 -->
+                        <div class="row g-2 mt-2 align-items-end">
+                            <div class="col-md-2">
+                                <label class="form-label small">Bill Type</label>
+                                <select class="form-select form-select-sm billtype-cell">
+                                    <option value="with">With Bill</option>
+                                    <option value="without">Without Bill</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Sanctioned</label>
+                                <input class="form-control form-control-sm sanctioned-cell" type="text" readonly />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label small">Claim</label>
+                                <input class="form-control form-control-sm claim-cell" type="number" min="0" step="0.01" />
+                            </div>
+                            <div class="col-md-3 upload-field">
+                                <label class="form-label small">Upload Bill</label>
+                                <input type="file" class="form-control form-control-sm file-cell" />
+                            </div>
+                            <div class="col-md-2 text-end">
+                           <button class="btn btn-sm btn-danger btn-delete position-absolute"
+                style="bottom: 10px; right: 10px;">
+            Delete
+        </button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                // delete row
+                row.find(".btn-delete").click(() => row.remove());
+
+                // fellows autocomplete
+                const fellowsInput = row.find(".fellows-cell");
+                const selectedIds = row.find(".selected-ids");
+                let chosen = [];
+                fellowsInput.on("input", function () {
+                    const text = $(this).val().toLowerCase();
+                    const suggestions = employees.filter(e =>
+                        (e.empName || e.EmpName || "").toLowerCase().includes(text) ||
+                        (e.empID || e.EmpID || "").toLowerCase().includes(text)
+                    ).slice(0, 5);
+
+                    $(this).next(".autocomplete-list").remove();
+                    if (!suggestions.length) return;
+
+                    const list = $('<div class="autocomplete-list border bg-white position-absolute p-1" style="z-index:9999;max-width:280px"></div>');
+                    suggestions.forEach(s => {
+                        const name = s.empName ?? s.EmpName ?? s.Emp;
+                        const id = s.empID ?? s.EmpID ?? s.Emp;
+                        const item = $(`<div class="small py-1 pointer">${name} (${id})</div>`);
+                        item.on("click", async () => {
+                            const date = row.find(".date-cell").val();
+                            const type = row.find(".type-cell").val();
+
+                            try {
+                                const res = await axios.get("/api/Employee/check-duplicate", {
+                                    params: { empId: id, typeOfExpense: type, dateOfExpense: date }
+                                });
+                                if (res.data.exists) {
+                                    alert(`${name} already has duplicate entry for ${date} (${type}).`);
+                                } else {
+                                    if (!chosen.find(x => x.empId === id)) {
+                                        chosen.push({ empId: id, name });
+                                        selectedIds.text(chosen.map(x => `${x.name}(${x.empId})`).join(", "));
+                                    }
+                                }
+                            } catch (err) { console.error(err); }
+
+                            fellowsInput.val("");
+                            list.remove();
+                        });
+                        list.append(item);
+                    });
+                    $(this).after(list);
+                    setTimeout(() => $(document).one("click", () => list.remove()), 200);
+                });
+
+                // bill type toggle
+                row.find(".billtype-cell").on("change", function () {
+                    if ($(this).val() === "with") {
+                        row.find(".upload-field").show();
+                    } else {
+                        row.find(".upload-field").hide();
+                        row.find(".file-cell").val("");
+                    }
+                }).trigger("change");
+
+                // km/qty change
+                row.find(".km-cell, .qty-cell, .billtype-cell").on("input change", () => recalcSanctionedForRow(row));
+                row.find(".claim-cell").on("input", () => highlightRow(row));
+
+                $("#expenseRows").append(row);
+                updateRowControls(row);
+            }
+
+            function updateRowControls(row) {
+                const type = row.find(".type-cell").val();
+                if (isTravelType(type)) {
+                    row.find(".km-cell").prop("disabled", false);
+                    row.find(".from-cell, .to-cell").show();
+                }
+                else if (isTransportType(type)) {
+                    row.find(".km-cell").prop("disabled", true).val("").hide();
+                    row.find(".from-cell, .to-cell").show();
+                    row.find(".kmfield").hide();
+                }
+                else {
+                    row.find(".km-cell").prop("disabled", true).val("").hide();
+                    row.find(".from-cell, .to-cell").hide();
+                    row.find(".travel-fields").hide();
+                }
+                recalcSanctionedForRow(row);
+            }
+
+            async function fetchLimit(level, type, withBill) {
+                try {
+                    const res = await axios.get(expenseLimitsApi, { params: { level, type, withBill } });
+                    return res.data?.maxLimit ?? 0;
+                } catch { return 0; }
+            }
+
+            async function recalcSanctionedForRow(row) {
+                const type = row.find(".type-cell").val();
+                const withBill = row.find(".billtype-cell").val() === "with";
+                const km = parseFloat(row.find(".km-cell").val() || 0);
+                const qty = parseFloat(row.find(".qty-cell").val() || 0) || 1;
+
+                const maxLimit = await fetchLimit(Level, type, withBill);
+                let sanctioned = 0;
+                if (isTravelType(type)) sanctioned = (km || 0) * (maxLimit || 0);
+                else sanctioned = (qty || 0) * (maxLimit || 0);
+
+                row.find(".sanctioned-cell").val(sanctioned.toFixed(2));
+                highlightRow(row);
+            }
+
+            function highlightRow(row) {
+                const claim = parseFloat(row.find(".claim-cell").val() || 0);
+                const sanctioned = parseFloat(row.find(".sanctioned-cell").val() || 0);
+                if (claim > sanctioned) row.css("background-color", "#fff8c6");
+                else row.css("background-color", "");
+            }
+
+            // clear/submit
+            $("#btnClear").click(() => $("#expenseRows").empty());
+
+            $("#btnSubmit").click(async () => {
+                const site = $("#siteName").val().trim();
+                const project = $("#projectCode").val().trim();
+                if (!site || !project) { alert("Enter site name and project code."); return; }
+
+                const rows = [];
+                const filesToSend = {};
+                let valid = true;
+
+                $("#expenseRows .expense-row").each(function () {
+                    const $tr = $(this);
+                    const date = $tr.find(".date-cell").val();
+                    const type = $tr.find(".type-cell").val();
+                    const km = parseFloat($tr.find(".km-cell").val() || 0);
+                    const qty = parseInt($tr.find(".qty-cell").val() || 0) || 0;
+                    const fellowsText = $tr.find(".selected-ids").text();
+                    const fellowIDs = fellowsText.split(",").map(s => {
+                        const m = s.match(/\(([^)]+)\)/);
+                        return m ? m[1] : "";
+                    }).filter(x => x).join(",");
+
+                    const from = $tr.find(".from-cell").val();
+                    const to = $tr.find(".to-cell").val();
+                    const travelLocation = (from && to) ? `${from} to ${to}` : "";
+
+                    const billType = $tr.find(".billtype-cell").val();
+                    const sanctioned = parseFloat($tr.find(".sanctioned-cell").val() || 0);
+                    const claim = parseFloat($tr.find(".claim-cell").val() || 0);
+                    const fileInp = $tr.find(".file-cell")[0];
+
+                    if (!claim || claim <= 0) {
+                        alert("Claim amount is required for all rows.");
+                        valid = false; return false;
+                    }
+                    if (billType === "with" && (!fileInp.files || !fileInp.files.length)) {
+                        alert("Upload Bill is required when Bill Type is 'With Bill'.");
+                        valid = false; return false;
+                    }
+
+                    let fileIndex = null;
+                    if (fileInp && fileInp.files && fileInp.files.length) {
+                        fileIndex = Object.keys(filesToSend).length;
+                        filesToSend[fileIndex] = fileInp.files[0];
+                    }
+
+                    rows.push({
+                        DateOfExpense: date,
+                        TypeOfExpense: type,
+                        KM: km,
+                        Quantity: qty,
+                        FellowMembers: fellowIDs,
+                        TravelLocation: travelLocation,
+                        BillType: billType,
+                        SanctionedAmount: sanctioned,
+                        ClaimAmount: claim,
+                        FileIndex: fileIndex
+                    });
+                });
+
+                if (!valid) return;
+                if (!rows.length) { alert("Add some rows first."); return; }
+
+                const fd = new FormData();
+                fd.append("EmpID", EmpID);
+                fd.append("SiteName", site);
+                fd.append("ProjectCode", project);
+                fd.append("Level", Level);
+                fd.append("IRB", IRB);
+                fd.append("Rows", JSON.stringify(rows));
+                for (const idx in filesToSend) fd.append(`file_${idx}`, filesToSend[idx]);
+
+                try {
+                    const res = await axios.post(submitApi, fd, { headers: { "Content-Type": "multipart/form-data" } });
+                    if (res.data?.success) {
+                        alert("Saved successfully");
+                        $("#expenseRows").empty();
+                    } else {
+                        alert("Save failed: " + (res.data?.message || "Unknown"));
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Error saving data");
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,277 @@
+﻿@{
+    ViewData["Title"] = "Employee List";
+    var designationClaim = User.FindFirst("Designation")?.Value ?? "";
+}
+<script>
+    // Access control based on session claim
+    const designation = "@designationClaim";
+    if (designation.toUpperCase() !== "HR") {
+        window.location.href = "/Home/Dashboard";
+    }
+</script>
+
+<div class="container mt-4">
+    <h3 class="text-center mb-3">All Employees</h3>
+
+    <!-- ✅ Filter/Search Bar -->
+    <div class="row mb-3">
+        <div class="col-md-3 col-12 mb-2">
+            <select id="filterType" class="form-select">
+                <option value="all">All</option>
+                <option value="empid">EmpID</option>
+                <option value="name">Name</option>
+            </select>
+        </div>
+        <div class="col-md-6 col-12 mb-2">
+            <input type="text" id="filterInput" class="form-control" placeholder="Search...">
+        </div>
+        <div class="col-md-3 col-12 mb-2 text-end">
+            <button class="btn btn-secondary w-100 w-md-auto" onclick="clearFilter()">Clear Filter</button>
+        </div>
+    </div>
+
+    <!-- ✅ Responsive table wrapper -->
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle text-center" id="employeeListTable">
+            <thead class="table-info">
+                <tr>
+                    <th>EmpID</th>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Level</th>
+                    <th>IRB</th>
+                    <th>Department</th>
+                    <th>Advance</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows loaded by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal for Edit -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm">
+                    <input type="hidden" id="editEmpID">
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <input type="text" id="editEmpName" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Designation</label>
+                        <input type="text" id="editDesignation" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Level</label>
+                        <input type="text" id="editLevel" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>IRB</label>
+                        <input type="text" id="editIRB" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Department</label>
+                        <input type="text" id="editDept" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Advance Amount</label>
+                        <input type="number" id="editAdvance" class="form-control">
+                    </div>
+                    <div class="mb-2">
+                        <label>Status</label>
+                        <input type="text" id="editStatus" class="form-control">
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary px-4">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let employeesData = [];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            loadAllEmployees();
+
+            function loadAllEmployees() {
+                axios.get('/api/employee/all')
+                    .then(res => {
+                        employeesData = res.data; // store all data
+                        renderTable(employeesData);
+                    });
+            }
+
+            function renderTable(data) {
+                const tbody = document.querySelector("#employeeListTable tbody");
+                tbody.innerHTML = "";
+
+                data.forEach(emp => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td data-label="EmpID">${emp.empID}</td>
+                        <td data-label="Name">${emp.empName}</td>
+                        <td data-label="Designation">${emp.designation || ''}</td>
+                        <td data-label="Level">${emp.level || ''}</td>
+                        <td data-label="IRB">${emp.irb || ''}</td>
+                        <td data-label="Department">${emp.dept || ''}</td>
+                        <td data-label="Advance">${emp.advanceAmount || 0}</td>
+                        <td data-label="Status">${emp.status || ''}</td>
+                        <td data-label="Actions" class="text-nowrap">
+                            <button class="btn btn-sm btn-primary me-1" onclick="openEditModal('${emp.empID}')">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteEmployee('${emp.empID}', this)">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // ✅ Filtering Logic
+            document.getElementById("filterInput").addEventListener("keyup", function () {
+                applyFilter();
+            });
+            document.getElementById("filterType").addEventListener("change", function () {
+                applyFilter();
+            });
+
+            window.clearFilter = function () {
+                document.getElementById("filterInput").value = "";
+                document.getElementById("filterType").value = "all";
+                renderTable(employeesData);
+            }
+
+            function applyFilter() {
+                const filterType = document.getElementById("filterType").value;
+                const searchText = document.getElementById("filterInput").value.toLowerCase();
+
+                if (filterType === "all" && !searchText) {
+                    renderTable(employeesData);
+                    return;
+                }
+
+                let filtered = employeesData.filter(emp => {
+                    if (filterType === "empid") {
+                        return emp.empID.toLowerCase().includes(searchText);
+                    } else if (filterType === "name") {
+                        return emp.empName.toLowerCase().includes(searchText);
+                    } else {
+                        // default all
+                        return emp.empID.toLowerCase().includes(searchText) ||
+                               emp.empName.toLowerCase().includes(searchText);
+                    }
+                });
+
+                renderTable(filtered);
+            }
+
+            // ✅ Existing functions unchanged (delete, edit modal, update)
+            window.deleteEmployee = function(empId, btn) {
+                if(confirm("Are you sure you want to delete this employee?")) {
+                    axios.delete(`/api/employee/${empId}`)
+                        .then(res => {
+                            if(res.data.success) {
+                                btn.closest("tr").remove();
+                                employeesData = employeesData.filter(x => x.empID !== empId);
+                            }
+                        });
+                }
+            }
+
+            window.openEditModal = function(empId) {
+                const emp = employeesData.find(e => e.empID === empId);
+                if(!emp) return;
+
+                document.getElementById("editEmpID").value = empId;
+                document.getElementById("editEmpName").value = emp.empName;
+                document.getElementById("editDesignation").value = emp.designation;
+                document.getElementById("editLevel").value = emp.level;
+                document.getElementById("editIRB").value = emp.irb;
+                document.getElementById("editDept").value = emp.dept;
+                document.getElementById("editAdvance").value = emp.advanceAmount;
+                document.getElementById("editStatus").value = emp.status;
+
+                var editModal = new bootstrap.Modal(document.getElementById('editEmployeeModal'));
+                editModal.show();
+            }
+
+            document.getElementById("editEmployeeForm").addEventListener("submit", function(e){
+                e.preventDefault();
+
+                const empId = document.getElementById("editEmpID").value;
+                const updated = {
+                    empName: document.getElementById("editEmpName").value,
+                    designation: document.getElementById("editDesignation").value,
+                    level: document.getElementById("editLevel").value,
+                    irb: document.getElementById("editIRB").value,
+                    dept: document.getElementById("editDept").value,
+                    advanceAmount: parseFloat(document.getElementById("editAdvance").value),
+                    status: document.getElementById("editStatus").value
+                };
+
+                axios.put(`/api/employee/${empId}`, updated)
+                    .then(res => {
+                        if(res.data.success){
+                            // update local array
+                            const idx = employeesData.findIndex(x => x.empID === empId);
+                            if(idx >= 0) employeesData[idx] = { empID: empId, ...updated };
+
+                            renderTable(employeesData);
+                            bootstrap.Modal.getInstance(document.getElementById('editEmployeeModal')).hide();
+                        }
+                    });
+            });
+        });
+    </script>
+}
+
+<style>
+    /* ✅ Mobile-specific tweaks */
+    @@media (max-width: 768px) {
+        h3
+
+    {
+        font-size: 1.3rem;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .table tbody td {
+        display: flex;
+        justify-content: space-between;
+        text-align: left;
+        padding: 6px;
+        border: none !important;
+    }
+
+        .table tbody td::before {
+            content: attr(data-label);
+            font-weight: bold;
+        }
+
+    }
+</style>
