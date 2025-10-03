@@ -1,0 +1,75 @@
+﻿@* @{
+    ViewData["Title"] = "Pending List";
+    var empId = ViewBag.EmpID as string ?? "";
+}
+<h3>Pending Items</h3>
+<table class="table table-striped" id="tblPending">
+    <thead><tr><th>EmpID</th><th>EmpName</th><th>SubmissionDate</th><th>Project</th><th>Count</th></tr></thead>
+    <tbody></tbody>
+</table>
+
+<div id="detailsArea"></div>
+
+@section Scripts {
+    <script>
+        const empId = '@empId';
+        function loadPending(){
+            axios.get(`/api/ReimbursementApi/pending/${empId}`).then(r=>{
+                const rows = r.data;
+                const tb = $('#tblPending tbody').empty();
+                rows.forEach(x=>{
+                    tb.append(`<tr data-emp="${x.empID}" data-date="${x.submissionDate}" data-project="${x.projectCode}">
+                        <td>${x.empID}</td><td>${x.empName}</td><td>${x.submissionDate}</td><td>${x.projectCode}</td><td>${x.count}</td>
+                    </tr>`);
+                });
+            });
+        }
+
+        $('#tblPending').on('click','tr', function(){
+            const emp = $(this).data('emp');
+            const date = $(this).data('date');
+            const project = $(this).data('project');
+            axios.get('/api/ReimbursementApi/details', { params: { empId: emp, submissionDate: date, projectCode: project } })
+                .then(r=>{
+                    const rows = r.data;
+                    let html = `<table class="table"><thead><tr><th>Date</th><th>Type</th><th>Qty</th><th>Fellow</th><th>Claim</th><th>Sanctioned</th><th>Actions</th></tr></thead><tbody>`;
+                    rows.forEach(row=>{
+                        html += `<tr>
+                            <td>${row.dateofExpense}</td>
+                            <td>${row.typeOfExpense}</td>
+                            <td>${row.quantity}</td>
+                            <td>${row.fellowMembers}</td>
+                            <td>${row.claimAmount}</td>
+                            <td>${row.sanctionedAmount ?? ''}</td>
+                            <td>
+                                ${row.requireSpecialApproval == 'true' ? `<button class="btn btn-sm btn-primary btn-accept" data-id="${row.id}">Accept</button>` : ''}
+                                <button class="btn btn-sm btn-danger btn-reject" data-id="${row.id}">Reject</button>
+                            </td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    $('#detailsArea').html(html);
+                });
+        });
+
+        $('#detailsArea').on('click','.btn-accept', function(){
+            const id = $(this).data('id');
+            // open modal or inline prompt to set sanctioned amount; here simple prompt:
+            const amt = prompt("Enter sanctioned amount (will replace claim if accepted):");
+            if(amt !== null){
+                axios.post('/api/ReimbursementApi/approve', { ID: id, SanctionedAmount: parseFloat(amt), ApproverEmpID: empId, Role: 'IBM', NextStatus: '1' })
+                    .then(()=> { alert('Approved'); loadPending(); });
+            }
+        });
+
+        $('#detailsArea').on('click', '.btn-reject', function(){
+            const id = $(this).data('id');
+            if(confirm('Reject this item?')) {
+                axios.post('/api/ReimbursementApi/reject', { ID: id }).then(()=> { alert('Rejected'); loadPending(); });
+            }
+        });
+
+        $(function(){ loadPending(); });
+    </script>
+}
+ *@

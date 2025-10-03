@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-user-circle"></i> Employee Login</h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-group mb-3">
+                        <label for="empId"><i class="fas fa-id-badge"></i> Employee ID</label>
+                        <input type="text" id="empId" class="form-control" placeholder="Enter Employee ID" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="password"><i class="fas fa-key"></i> Password</label>
+                        <div class="input-group">
+                            <input type="password" id="password" class="form-control" placeholder="Enter Password" />
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+                        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Register">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </div>
+
+                    <p id="error" class="text-danger mt-3 text-center"></p>
+                    <p id="success" class="text-success mt-3 text-center"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Toggle password visibility
+    document.getElementById("togglePassword").addEventListener("click", function () {
+        const passwordInput = document.getElementById("password");
+        const icon = this.querySelector("i");
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
+        }
+    });
+
+    async function login() {
+        const empId = document.getElementById("empId").value.trim();
+        const password = document.getElementById("password").value.trim();
+        const errorBox = document.getElementById("error");
+        const successBox = document.getElementById("success");
+
+        errorBox.innerText = "";
+        successBox.innerText = "";
+
+        if (!empId || !password) {
+            errorBox.innerText = "Please enter Employee ID and Password.";
+            return;
+        }
+
+        try {
+            const res = await axios.post("/api/Employee/DoLogin", { EmpId: empId, Password: password });
+
+            if (res.data && res.data.success) {
+                successBox.innerText = "Login successful!";
+                window.location.href = res.data.redirectUrl || "/Home/Index";
+            }
+        } catch (err) {
+            console.error(err);
+            const msg = err.response?.data?.message ?? "Error connecting to server.";
+            errorBox.innerText = msg;
+        }
+    }
+</script>

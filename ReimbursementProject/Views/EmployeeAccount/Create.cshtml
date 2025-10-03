@@ -1,0 +1,168 @@
+﻿@model ReimbursementProject.Models.EmployeeAccount
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Employee Account Entry";
+
+    // Get session claims
+    var designationClaim = User.FindFirst("Designation")?.Value ?? "";
+}
+
+<script>
+    // Access control based on session claim
+    const designation = "@designationClaim";
+    if (designation.toUpperCase() !== "ACCOUNTS") {
+        window.location.href = "/Home/Dashboard";
+    }
+</script>
+
+<div class="container mt-4">
+
+    <!-- Title + Total -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="text-start">
+            <h3 class="fw-bold text-primary mb-0">
+                <i class="bi bi-person-lines-fill"></i> Employee Account Entry
+            </h3>
+            <p class="text-muted mb-0">Manage advance payments & approvals with ease</p>
+        </div>
+        <div>
+            <span id="finalAmountBox" class="badge fs-6 bg-secondary px-3 py-2">Total: 0</span>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white fw-bold">
+            <i class="bi bi-pencil-square"></i> Account Entry Form
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Employee ID</label>
+                        <input asp-for="EMP_ID" class="form-control" id="empId" placeholder="Enter Employee ID" required value="" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Employee Name</label>
+                        <input asp-for="EMP_NAME" class="form-control" id="empName" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Advance Amount</label>
+                        <input type="number" asp-for="ADVANCE_AMOUNT" class="form-control" id="advanceAmount" value="0" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Payment Type</label>
+                        <select asp-for="PAYMENT_TYPE" class="form-select" id="paymentType" required>
+                            <option value="">-- Select --</option>
+                            <option value="IMPRESS">IMPRESS</option>
+                            <option value="BILL">BILL</option>
+                            <option value="BILL APPROVAL">BILL APPROVAL</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Date & Time</label>
+                        <input asp-for="DATETIME" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Approval Employee</label>
+                        <input asp-for="APPROVAL_EMP" class="form-control" required />
+                    </div>
+                </div>
+
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-check2-circle"></i> Submit Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transaction History -->
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-clock-history"></i> Transaction History</span>
+            <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#historyCollapse">
+                <i class="bi bi-eye"></i> Show / Hide
+            </button>
+        </div>
+        <div id="historyCollapse" class="collapse show">
+            <div class="card-body p-0">
+                <table class="table table-hover table-striped mb-0" id="transactionTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee ID</th>
+                            <th>Name</th>
+                            <th>Advance Amount</th>
+                            <th>Payment Type</th>
+                            <th>Date & Time</th>
+                            <th>Approval Employee</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // When Employee ID is entered
+    document.getElementById("empId").addEventListener("blur", function () {
+        let empId = this.value.trim();
+        if (empId === "") return;
+
+        // Fetch employee name
+        fetch(`/api/Employee/employeeName?empid=${empId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("empName").value = (data && data.length > 0) ? data[0] : "";
+            });
+
+        // Fetch total advance amount
+        fetch(`/api/Employee/totalAmount?empid=${empId}`)
+            .then(res => res.json())
+            .then(data => {
+                let total = (data && data.length > 0) ? data[0].totalAdvance ?? 0 : 0;
+                showFinalAmount(total);
+            });
+
+        // Fetch transaction history
+        fetch(`/api/Employee/history?empid=${empId}`)
+            .then(res => res.json())
+            .then(rows => {
+                let tbody = document.querySelector("#transactionTable tbody");
+                tbody.innerHTML = "";
+                rows.forEach(r => {
+                    let tr = `<tr>
+                        <td>${r.emP_ID ?? ""}</td>
+                        <td>${r.emP_NAME ?? ""}</td>
+                        <td>${r.advancE_AMOUNT ?? 0}</td>
+                        <td>${r.paymenT_TYPE ?? ""}</td>
+                        <td>${r.datetime ?? ""}</td>
+                        <td>${r.approvaL_EMP ?? ""}</td>
+                    </tr>`;
+                    tbody.innerHTML += tr;
+                });
+            });
+    });
+
+    // Update total amount badge
+    function showFinalAmount(value) {
+        let box = document.getElementById("finalAmountBox");
+        box.textContent = "Total: " + value;
+
+        if (value < 0) {
+            box.className = "badge fs-6 bg-danger px-3 py-2";
+        } else if (value > 0) {
+            box.className = "badge fs-6 bg-success px-3 py-2";
+        } else {
+            box.className = "badge fs-6 bg-secondary px-3 py-2";
+        }
+    }
+</script>

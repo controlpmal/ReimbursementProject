@@ -1,0 +1,146 @@
+﻿@{
+    ViewData["Title"] = "New Employee Requests";
+    var designationClaim = User.FindFirst("Designation")?.Value ?? "";
+}
+
+<script>
+    // Access control based on session claim
+    const designation = "@designationClaim";
+    if (designation.toUpperCase() !== "HR") {
+        window.location.href = "/Home/Dashboard";
+    }
+</script>
+
+<div class="container mt-4">
+    <h3 class="mb-3">New Employee Requests</h3>
+
+    <!-- ✅ Bootstrap responsive wrapper -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-striped align-middle" id="newEmployeesTable">
+            <thead class="table-info">
+                <tr>
+                    <th>EmpID</th>
+                    <th>Name</th>
+                    <th>Irb</th>
+                    <th>Level</th>
+                    <th>Designation</th>
+                    <th>Department</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be loaded by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ✅ Card layout for mobile -->
+    <div id="newEmployeesCards" class="d-md-none"></div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            loadNewEmployees();
+
+            function loadNewEmployees() {
+                axios.get('/api/employee/new')
+                    .then(res => {
+                        const tbody = document.querySelector("#newEmployeesTable tbody");
+                        const cardContainer = document.querySelector("#newEmployeesCards");
+                        tbody.innerHTML = "";
+                        cardContainer.innerHTML = "";
+
+                        res.data.forEach(emp => {
+                            // Desktop Row
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+                                <td>${emp.empId}</td>
+                                <td>${emp.empName}</td>
+                                <td><input type="text" class="form-control form-control-sm" value="${emp.empIrb || ''}" /></td>
+                                <td>
+                                    <select class="form-control form-control-sm">
+                                        <option value="">-- Select Level --</option>
+                                        <option value="L1" ${emp.empLevel === "L1" ? "selected" : ""}>L1</option>
+                                        <option value="L2" ${emp.empLevel === "L2" ? "selected" : ""}>L2</option>
+                                        <option value="L3" ${emp.empLevel === "L3" ? "selected" : ""}>L3</option>
+                                        <option value="L4" ${emp.empLevel === "L4" ? "selected" : ""}>L4</option>
+                                        <option value="L5" ${emp.empLevel === "L5" ? "selected" : ""}>L5</option>
+                                    </select>
+                                </td>
+                                <td><input type="text" class="form-control form-control-sm" value="${emp.empDesignation || ''}" /></td>
+                                <td><input type="text" class="form-control form-control-sm" value="${emp.empDepartment || ''}" /></td>
+                                <td>
+                                    <button class="btn btn-success btn-sm" onclick="approveEmployee('${emp.empId}', this)">Save</button>
+                                </td>
+                            `;
+                            tbody.appendChild(tr);
+
+                            // Mobile Card
+                            const card = document.createElement("div");
+                            card.className = "card shadow-sm mb-3";
+                            card.innerHTML = `
+                                <div class="card-body">
+                                    <h6><strong>${emp.empName}</strong> (ID: ${emp.empId})</h6>
+                                    <div class="mb-2">
+                                        <label class="form-label">IRB</label>
+                                        <input type="text" class="form-control form-control-sm" value="${emp.empIrb || ''}" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Level</label>
+                                        <select class="form-control form-control-sm">
+                                            <option value="">-- Select Level --</option>
+                                            <option value="L1" ${emp.empLevel === "L1" ? "selected" : ""}>L1</option>
+                                            <option value="L2" ${emp.empLevel === "L2" ? "selected" : ""}>L2</option>
+                                            <option value="L3" ${emp.empLevel === "L3" ? "selected" : ""}>L3</option>
+                                            <option value="L4" ${emp.empLevel === "L4" ? "selected" : ""}>L4</option>
+                                            <option value="L5" ${emp.empLevel === "L5" ? "selected" : ""}>L5</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Designation</label>
+                                        <input type="text" class="form-control form-control-sm" value="${emp.empDesignation || ''}" />
+                                    </div>
+                                    <div class="mb-2">
+                                        <label class="form-label">Department</label>
+                                        <input type="text" class="form-control form-control-sm" value="${emp.empDepartment || ''}" />
+                                    </div>
+                                    <button class="btn btn-success btn-sm mt-2 w-100" onclick="approveEmployee('${emp.empId}', this)">Save</button>
+                                </div>
+                            `;
+                            cardContainer.appendChild(card);
+                        });
+                    });
+            }
+
+            window.approveEmployee = function(empId, btn) {
+                const row = btn.closest("tr") || btn.closest(".card-body");
+                const inputs = row.querySelectorAll("input, select");
+
+                const updatedEmp = {
+                    IRB: inputs[0].value.trim(),
+                    Level: inputs[1].value.trim(),
+                    Designation: inputs[2].value.trim(),
+                    Dept: inputs[3].value.trim()
+                };
+
+                if (!updatedEmp.IRB || !updatedEmp.Level || !updatedEmp.Designation || !updatedEmp.Dept) {
+                    alert("⚠️ Please fill all fields before saving.");
+                    return;
+                }
+
+                axios.post(`/api/employee/approve/${empId}`, updatedEmp)
+                    .then(res => {
+                        if (res.data.success) {
+                            row.remove(); // ✅ works for both table row & card
+                        } else {
+                            alert(res.data.message || "Error approving employee");
+                        }
+                    })
+                    .catch(() => {
+                        alert("❌ Something went wrong while saving.");
+                    });
+            }
+        });
+    </script>
+}

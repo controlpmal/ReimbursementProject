@@ -1,0 +1,165 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "Dashboard";
+
+    // ✅ Get values from Claims
+    var empid = User.FindFirst("EmpID")?.Value ?? "";
+    var designation = User.FindFirst("Designation")?.Value ?? "";
+}
+
+@if (!(User.Identity?.IsAuthenticated ?? false))
+{
+    <script>
+        window.location.href = "/Home/Login";
+    </script>
+}
+
+<div class="container mt-5">
+    <div class="row text-center">
+        <!-- Pending Card -->
+        <div class="col-md-4">
+            <a href="/Home/Details?type=pending" class="text-decoration-none">
+                <div class="card dashboard-card bg-warning text-white shadow-lg">
+                    <div class="card-body">
+                        <h3 class="card-title">Pending</h3>
+                        <h1 id="pendingCount">0</h1>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Approved Card -->
+        <div class="col-md-4">
+            <a href="/Home/Details?type=approved">
+                <div class="card dashboard-card bg-success text-white shadow-lg">
+                    <div class="card-body">
+                        <h3 class="card-title">Approved</h3>
+                        <h1 id="approvedCount">0</h1>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Rejected Card -->
+        <div class="col-md-4">
+            <a href="/Home/Details?type=rejected">
+                <div class="card dashboard-card bg-danger text-white shadow-lg">
+                    <div class="card-body">
+                        <h3 class="card-title">Rejected</h3>
+                        <h1 id="rejectedCount">0</h1>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Extra cards only for HR -->
+    <div class="row text-center mt-4" id="hrCards" style="display:none;">
+        <!-- New Employee Requests (Vertical Name List) -->
+        <div class="col-md-6">
+            <a href="/Home/NewEmployees" class="text-decoration-none">
+                <div class="card dashboard-card bg-info text-white shadow-lg h-100">
+                    <div class="card-header fw-bold text-center">
+                        <i class="fas fa-user-plus"></i> New Employee Requests
+                    </div>
+                    <div class="card-body p-2" style="max-height: 300px; overflow-y: auto;">
+                        <ul id="employeePreview" class="list-group list-group-flush">
+                            <!-- Employee names will load here -->
+                        </ul>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Employee List -->
+        <div class="col-md-6">
+            <a href="/Home/EmployeeList" class="text-decoration-none">
+                <div class="card dashboard-card bg-primary text-white shadow-lg">
+                    <div class="card-body">
+                        <h3 class="card-title">Employee List</h3>
+                        <h1><i class="fas fa-users"></i></h1>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-card {
+        border-radius: 15px;
+        transition: transform 0.3s ease-in-out;
+        cursor: pointer;
+    }
+
+        .dashboard-card:hover {
+            transform: scale(1.08);
+        }
+
+    h1 {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    /* Employee Requests Vertical Name List */
+    #employeePreview {
+        padding-left: 0;
+    }
+
+        #employeePreview li {
+            cursor: default;
+            padding: 6px 10px;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            background-color: rgba(255, 255, 255, 0.2);
+            list-style: none;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+            #employeePreview li:hover {
+                background-color: rgba(255, 255, 255, 0.35);
+                transform: scale(1.02);
+            }
+</style>
+
+@section Scripts {
+    <script src="~/lib/axios/dist/axios.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // ✅ Values injected from Claims
+            const empid = "@empid";
+            const designation = "@designation";
+
+            function reload() {
+                axios.get(`/api/dashboard/pending?empid=${empid}&designation=${designation}`)
+                    .then(res => document.getElementById("pendingCount").innerText = res.data);
+
+                axios.get(`/api/dashboard/approved?empid=${empid}&designation=${designation}`)
+                    .then(res => document.getElementById("approvedCount").innerText = res.data);
+
+                axios.get(`/api/dashboard/rejected?empid=${empid}&designation=${designation}`)
+                    .then(res => document.getElementById("rejectedCount").innerText = res.data);
+            }
+
+            reload();
+            setInterval(reload, 5000);
+
+            // ✅ HR cards visible only for HR designation
+            if (designation === "HR") {
+                document.getElementById("hrCards").style.display = "flex";
+
+                axios.get(`/api/employee/new`)
+                    .then(res => {
+                        const preview = document.getElementById("employeePreview");
+                        preview.innerHTML = "";
+                        res.data.forEach(emp => {
+                            const li = document.createElement("li");
+                            li.textContent = emp.empName;
+                            preview.appendChild(li);
+                        });
+                    });
+            }
+        });
+    </script>
+}
