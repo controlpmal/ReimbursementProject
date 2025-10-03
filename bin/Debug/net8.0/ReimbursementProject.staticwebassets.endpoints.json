@@ -3,88 +3,6 @@
   "ManifestType": "Build",
   "Endpoints": [
     {
-      "Route": "Docker",
-      "AssetFile": "Docker",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "625"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "application/octet-stream"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:11 GMT"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk="
-        }
-      ]
-    },
-    {
-      "Route": "Docker.5m9rucnmzc",
-      "AssetFile": "Docker",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "625"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "application/octet-stream"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:11 GMT"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "5m9rucnmzc"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk="
-        },
-        {
-          "Name": "label",
-          "Value": "Docker"
-        }
-      ]
-    },
-    {
       "Route": "ReimbursementProject.ov1v94m828.styles.css",
       "AssetFile": "ReimbursementProject.styles.css",
       "Selectors": [],
@@ -111,7 +29,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:23 GMT"
+          "Value": "Fri, 03 Oct 2025 07:34:41 GMT"
         }
       ],
       "EndpointProperties": [
@@ -156,7 +74,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:23 GMT"
+          "Value": "Fri, 03 Oct 2025 07:34:41 GMT"
         }
       ],
       "EndpointProperties": [

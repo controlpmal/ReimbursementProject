@@ -581,4 +581,5 @@ D:\24138\ReimbursementProject\ReimbursementProject\bin\Debug\net8.0\Microsoft.Ex
 D:\24138\ReimbursementProject\ReimbursementProject\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 D:\24138\ReimbursementProject\ReimbursementProject\bin\Debug\net8.0\System.Security.Cryptography.Xml.dll
 D:\24138\ReimbursementProject\ReimbursementProject\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\24138\ReimbursementProject\ReimbursementProject\obj\Debug\net8.0\ReimbursementProject.sourcelink.json
 D:\24138\ReimbursementProject\ReimbursementProject\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

@@ -32,16 +32,16 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVBY2NvdW50XENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/24138/ReimbursementProject/ReimbursementProject/Views/EmployeeAccount/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZWVBY2NvdW50XEluZGV4LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [D:/24138/ReimbursementProject/ReimbursementProject/Views/Home/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/24138/ReimbursementProject/ReimbursementProject/Views/Home/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEZXRhaWxzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/24138/ReimbursementProject/ReimbursementProject/Views/Home/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/24138/ReimbursementProject/ReimbursementProject/Views/Home/EmployeeList.cshtml]

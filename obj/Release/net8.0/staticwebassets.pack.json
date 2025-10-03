@@ -5,12 +5,24 @@
       "PackagePath": "staticwebassets\\ReimbursementProject.ov1v94m828.bundle.scp.css"
     },
     {
+      "Id": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
+      "PackagePath": "staticwebassets"
+    },
+    {
       "Id": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
       "Id": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
+    },
+    {
+      "Id": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\images\\pioneerimg.jpg",
+      "PackagePath": "staticwebassets\\images\\pioneerimg.jpg"
+    },
+    {
+      "Id": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\js\\expense.js",
+      "PackagePath": "staticwebassets\\js\\expense.js"
     },
     {
       "Id": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\js\\site.js",

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ReimbursementProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+53e6ffb005ff43b817e51fb59fc37db414679240")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f04190b83c414bc69aa43c929fbce7e2506db583")]
 [assembly: System.Reflection.AssemblyProductAttribute("ReimbursementProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ReimbursementProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

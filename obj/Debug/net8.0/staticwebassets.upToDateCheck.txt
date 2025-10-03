@@ -1,5 +1,4 @@
 wwwroot\css\site.css
-wwwroot\Docker
 wwwroot\favicon.ico
 wwwroot\images\pioneerimg.jpg
 wwwroot\js\expense.js

@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "YpghF0JnRDfqTkutw12itrDQKyCFKck7IMY3hXwq+Nc=",
+  "Hash": "VjN6m6blEVnEB/2as6S5vwoHdCo9QXDutA9kwpaaMqA=",
   "Source": "ReimbursementProject",
   "BasePath": "_content/ReimbursementProject",
   "Mode": "Default",
@@ -73,11 +73,32 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "c2tiyv64ts",
-      "Integrity": "pAGv4ietcJNk/EwsQZ5BN9+K4MuNYS2a9wl4Jw+q9D0=",
+      "Fingerprint": "7e6tgtpdkl",
+      "Integrity": "nznteQTuPRkIfACEFmdAWAqYRU8d+X/70b9zQkDsiE8=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
+    },
+    {
+      "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
+      "SourceId": "ReimbursementProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\",
+      "BasePath": "_content/ReimbursementProject",
+      "RelativePath": "Docker#[.{fingerprint}]?",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "5m9rucnmzc",
+      "Integrity": "beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Docker"
     },
     {
       "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\favicon.ico",
@@ -99,6 +120,48 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\images\\pioneerimg.jpg",
+      "SourceId": "ReimbursementProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\",
+      "BasePath": "_content/ReimbursementProject",
+      "RelativePath": "images/pioneerimg#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "zvr9edn4dw",
+      "Integrity": "kXgngWA18bucpsUwMT2BREMLb8sevrxE8ZdhK6Hdp74=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\pioneerimg.jpg"
+    },
+    {
+      "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\js\\expense.js",
+      "SourceId": "ReimbursementProject",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\",
+      "BasePath": "_content/ReimbursementProject",
+      "RelativePath": "js/expense#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "odfh5u3hz0",
+      "Integrity": "HDX+nErAO6lZyWdF5gb60Oxpo3bSjFXvaOO9MWGSJKw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\expense.js"
     },
     {
       "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\js\\site.js",
@@ -1321,7 +1384,7 @@
   ],
   "Endpoints": [
     {
-      "Route": "css/site.c2tiyv64ts.css",
+      "Route": "css/site.7e6tgtpdkl.css",
       "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\css\\site.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -1331,7 +1394,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "362"
+          "Value": "368"
         },
         {
           "Name": "Content-Type",
@@ -1339,11 +1402,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"pAGv4ietcJNk/EwsQZ5BN9+K4MuNYS2a9wl4Jw+q9D0=\""
+          "Value": "\"nznteQTuPRkIfACEFmdAWAqYRU8d+X/70b9zQkDsiE8=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 10 Sep 2025 09:10:30 GMT"
+          "Value": "Wed, 01 Oct 2025 10:01:54 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1353,7 +1416,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "c2tiyv64ts"
+          "Value": "7e6tgtpdkl"
         },
         {
           "Name": "label",
@@ -1361,7 +1424,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-pAGv4ietcJNk/EwsQZ5BN9+K4MuNYS2a9wl4Jw+q9D0="
+          "Value": "sha256-nznteQTuPRkIfACEFmdAWAqYRU8d+X/70b9zQkDsiE8="
         }
       ]
     },
@@ -1376,7 +1439,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "362"
+          "Value": "368"
         },
         {
           "Name": "Content-Type",
@@ -1384,11 +1447,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"pAGv4ietcJNk/EwsQZ5BN9+K4MuNYS2a9wl4Jw+q9D0=\""
+          "Value": "\"nznteQTuPRkIfACEFmdAWAqYRU8d+X/70b9zQkDsiE8=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 10 Sep 2025 09:10:30 GMT"
+          "Value": "Wed, 01 Oct 2025 10:01:54 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1398,7 +1461,89 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-pAGv4ietcJNk/EwsQZ5BN9+K4MuNYS2a9wl4Jw+q9D0="
+          "Value": "sha256-nznteQTuPRkIfACEFmdAWAqYRU8d+X/70b9zQkDsiE8="
+        }
+      ]
+    },
+    {
+      "Route": "Docker",
+      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "625"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 03 Oct 2025 07:03:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk="
+        }
+      ]
+    },
+    {
+      "Route": "Docker.5m9rucnmzc",
+      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "625"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 03 Oct 2025 07:03:11 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "5m9rucnmzc"
+        },
+        {
+          "Name": "label",
+          "Value": "Docker"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk="
         }
       ]
     },
@@ -1481,6 +1626,170 @@
         {
           "Name": "integrity",
           "Value": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM="
+        }
+      ]
+    },
+    {
+      "Route": "images/pioneerimg.jpg",
+      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\images\\pioneerimg.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "14865"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kXgngWA18bucpsUwMT2BREMLb8sevrxE8ZdhK6Hdp74=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 19 Sep 2025 10:32:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-kXgngWA18bucpsUwMT2BREMLb8sevrxE8ZdhK6Hdp74="
+        }
+      ]
+    },
+    {
+      "Route": "images/pioneerimg.zvr9edn4dw.jpg",
+      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\images\\pioneerimg.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "14865"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"kXgngWA18bucpsUwMT2BREMLb8sevrxE8ZdhK6Hdp74=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 19 Sep 2025 10:32:26 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "zvr9edn4dw"
+        },
+        {
+          "Name": "label",
+          "Value": "images/pioneerimg.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-kXgngWA18bucpsUwMT2BREMLb8sevrxE8ZdhK6Hdp74="
+        }
+      ]
+    },
+    {
+      "Route": "js/expense.js",
+      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\js\\expense.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2100"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"HDX+nErAO6lZyWdF5gb60Oxpo3bSjFXvaOO9MWGSJKw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 18 Sep 2025 07:26:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-HDX+nErAO6lZyWdF5gb60Oxpo3bSjFXvaOO9MWGSJKw="
+        }
+      ]
+    },
+    {
+      "Route": "js/expense.odfh5u3hz0.js",
+      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\js\\expense.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2100"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"HDX+nErAO6lZyWdF5gb60Oxpo3bSjFXvaOO9MWGSJKw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 18 Sep 2025 07:26:43 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "odfh5u3hz0"
+        },
+        {
+          "Name": "label",
+          "Value": "js/expense.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-HDX+nErAO6lZyWdF5gb60Oxpo3bSjFXvaOO9MWGSJKw="
         }
       ]
     },

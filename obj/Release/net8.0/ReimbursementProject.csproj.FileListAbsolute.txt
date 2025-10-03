@@ -287,3 +287,11 @@ D:\24138\ReimbursementProject\ReimbursementProject\obj\Release\net8.0\refint\Rei
 D:\24138\ReimbursementProject\ReimbursementProject\obj\Release\net8.0\ReimbursementProject.pdb
 D:\24138\ReimbursementProject\ReimbursementProject\obj\Release\net8.0\ReimbursementProject.genruntimeconfig.cache
 D:\24138\ReimbursementProject\ReimbursementProject\obj\Release\net8.0\ref\ReimbursementProject.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\Microsoft.Extensions.ObjectPool.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\Microsoft.Extensions.WebEncoders.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\System.Security.Cryptography.Xml.dll
+D:\24138\ReimbursementProject\ReimbursementProject\bin\Release\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+D:\24138\ReimbursementProject\ReimbursementProject\obj\Release\net8.0\ReimbursementProject.sourcelink.json

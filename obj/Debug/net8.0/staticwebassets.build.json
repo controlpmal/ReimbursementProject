@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "OXxQGLqzMRyeIkROdmmuG8pAYzMsYG7ddmIwNfK38HM=",
+  "Hash": "m2qllijkfkwYNSFKe1zZuW/CHn9yKr9Ctc0oO9zLHG0=",
   "Source": "ReimbursementProject",
   "BasePath": "_content/ReimbursementProject",
   "Mode": "Default",
@@ -78,27 +78,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
-    },
-    {
-      "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
-      "SourceId": "ReimbursementProject",
-      "SourceType": "Discovered",
-      "ContentRoot": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\",
-      "BasePath": "_content/ReimbursementProject",
-      "RelativePath": "Docker#[.{fingerprint}]?",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "Fingerprint": "5m9rucnmzc",
-      "Integrity": "beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\Docker"
     },
     {
       "Identity": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\favicon.ico",
@@ -1462,88 +1441,6 @@
         {
           "Name": "integrity",
           "Value": "sha256-nznteQTuPRkIfACEFmdAWAqYRU8d+X/70b9zQkDsiE8="
-        }
-      ]
-    },
-    {
-      "Route": "Docker",
-      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "625"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "application/octet-stream"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "no-cache"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "integrity",
-          "Value": "sha256-beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk="
-        }
-      ]
-    },
-    {
-      "Route": "Docker.5m9rucnmzc",
-      "AssetFile": "D:\\24138\\ReimbursementProject\\ReimbursementProject\\wwwroot\\Docker",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "625"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "application/octet-stream"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "5m9rucnmzc"
-        },
-        {
-          "Name": "label",
-          "Value": "Docker"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-beea5eRSdWgj41qn8U7QOLX+2QWh819/odsCFfLa3uk="
         }
       ]
     },
@@ -6572,7 +6469,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:23 GMT"
+          "Value": "Fri, 03 Oct 2025 07:34:41 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6609,7 +6506,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:23 GMT"
+          "Value": "Fri, 03 Oct 2025 07:34:41 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6654,7 +6551,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:23 GMT"
+          "Value": "Fri, 03 Oct 2025 07:34:41 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6699,7 +6596,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 03 Oct 2025 07:03:23 GMT"
+          "Value": "Fri, 03 Oct 2025 07:34:41 GMT"
         },
         {
           "Name": "Cache-Control",
