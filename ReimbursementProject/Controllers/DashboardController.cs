@@ -300,72 +300,59 @@ namespace ReimbursementProject.Controllers
             // group by EmpID + SubmissionDate (date only) + ProjectCode + SiteName
          
  
-            var groups = baseQuery
-            .AsEnumerable() // we use AsEnumerable to do Date-only grouping safely (small datasets assumed). If large, replace with proper DbFunctions.TruncateTime approach.
-            .GroupBy(e => new {
-                e.EmpID,
-                SubmissionDate = e.SubmissionDate?.Date,
-                e.ProjectCode,
-                e.SiteName,
-                e.IRB,
-                e.Status,
-                e.Rejection,
-                e.ExpenseID
-            })
-            .Select(g => new DashboardGroupDto
-            {
-                EmpID = g.Key.EmpID ?? "",
-                ExpenseId = g.Key.ExpenseID,
-                SubmissionDate = g.Key.SubmissionDate,
-                ProjectCode = g.Key.ProjectCode,
-                SiteName = g.Key.SiteName,
-                IRB = g.Key.IRB,
-                Status = g.Key.Status,
-                Rejection = g.Key.Rejection,
-                TotalClaimAmount = g.Sum(x => x.ClaimAmount ?? 0),
-                TotalSanctionedAmount = g.Sum(x => x.SanctionedAmount ?? 0),
-                EmpName = _context.EmployeeDetails
-                            .Where(ed => ed.EmpID == g.Key.EmpID)
-                            .Select(ed => ed.EmpName)
-                            .FirstOrDefault() ?? "",
-                IRBName = _context.EmployeeDetails
-                            .Where(ed => ed.EmpID == g.Key.IRB)
-                            .Select(ed => ed.EmpName)
-                            .FirstOrDefault() ?? ""
-            })
-            .OrderByDescending(x => x.SubmissionDate)
-            .ToList();
-      
+           var groups = (
+        from e in baseQuery
+        join emp in _context.EmployeeDetails on e.EmpID equals emp.EmpID into empJoin
+        from emp in empJoin.DefaultIfEmpty()
+        join irbEmp in _context.EmployeeDetails on e.IRB equals irbEmp.EmpID into irbJoin
+        from irbEmp in irbJoin.DefaultIfEmpty()
+        group new { e, emp, irbEmp } by new {
+            e.EmpID,
+            e.ExpenseID,
+            SubmissionDate = e.SubmissionDate.HasValue ? e.SubmissionDate.Value.Date : (DateTime?)null,
+            e.ProjectCode,
+            e.SiteName,
+            e.IRB,
+            e.Status,
+            e.Rejection
+        } into g
+        select new DashboardGroupDto {
+            EmpID = g.Key.EmpID,
+            ExpenseId = g.Key.ExpenseID,
+            SubmissionDate = g.Key.SubmissionDate,
+            ProjectCode = g.Key.ProjectCode,
+            SiteName = g.Key.SiteName,
+            IRB = g.Key.IRB,
+            Status = g.Key.Status,
+            Rejection = g.Key.Rejection,
+            TotalClaimAmount = g.Sum(x => x.e.ClaimAmount ?? 0),
+            TotalSanctionedAmount = g.Sum(x => x.e.SanctionedAmount ?? 0),
+            EmpName = g.Select(x => x.emp.EmpName).FirstOrDefault() ?? "",
+            IRBName = g.Select(x => x.irbEmp.EmpName).FirstOrDefault() ?? ""
+        }
+    ).OrderByDescending(x => x.SubmissionDate)
+     .ToList();
 
         return Ok(groups);
     }
-       
 
         [HttpGet("groupitems")]
-        public IActionResult GetGroupItems(string empid, DateTime submissionDate,long expenseId)
+        public async Task<IActionResult> GetGroupItems(string empid, DateTime submissionDate, long expenseId)
         {
+            // Normalize empid
+            empid = empid.Trim();
 
-            var items1 = _context.ExpenseLogBook
-       .Where(e => e.EmpID == empid
-              
-                && e.SubmissionDate.HasValue
-                && e.SubmissionDate.Value.Date == submissionDate.Date
-                 && e.ExpenseID == expenseId)
-       .ToList();
-
-
-
-            var items = _context.ExpenseLogBook
-                .Where(e => e.EmpID.Trim() == empid.Trim()
-                         && e.ExpenseID == expenseId
-                         && e.SubmissionDate.HasValue
-                         && EF.Functions.DateDiffDay(e.SubmissionDate.Value, submissionDate) == 0)
+            var items = await _context.ExpenseLogBook
+                .Where(e => e.EmpID == empid
+                            && e.ExpenseID == expenseId
+                            && e.SubmissionDate.HasValue
+                            && e.SubmissionDate.Value.Date == submissionDate.Date) // simple comparison
                 .Select(e => new ExpenseItemDto
                 {
                     ID = e.ID,
                     DateOfExpense = e.DateofExpense,
                     TypeOfExpense = e.TypeOfExpense,
-                    TravelLocation= e.TravelLocation,
+                    TravelLocation = e.TravelLocation,
                     Quantity = e.Quantity,
                     FellowMembers = e.FellowMembers,
                     ClaimAmount = e.ClaimAmount,
@@ -375,10 +362,11 @@ namespace ReimbursementProject.Controllers
                     Status = e.Status,
                     Rejection = e.Rejection
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(items);
         }
+
 
 
 

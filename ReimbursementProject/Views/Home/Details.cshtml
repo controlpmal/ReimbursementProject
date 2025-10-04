@@ -51,6 +51,18 @@
     </div>
 </div>
 
+<!-- Loader Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-box">
+        <img src="https://i.gifer.com/ZZ5H.gif" alt="loading" class="loading-icon" />
+        <p class="loading-text">Loading...</p>
+    </div>
+</div>
+
+
+
+
+
 <!-- Group Modal -->
 <div class="modal fade" id="groupModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
@@ -88,7 +100,60 @@
         </div>
     </div>
 </div>
+<style>
 
+    /* Overlay with blur */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        backdrop-filter: blur(6px); /* 🔥 background blur effect */
+        background: rgba(255, 255, 255, 0.3);
+        display: none; /* hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    /* Box container */
+    .loading-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 30px 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        text-align: center;
+        animation: floaty 2s ease-in-out infinite;
+    }
+
+    /* Floating animation */
+    @@keyframes floaty {
+        0%, 100%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+    }
+
+    /* Icon */
+    .loading-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+    }
+
+    /* Text */
+    .loading-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        font-family: "Inter", sans-serif;
+    }
+
+</style>
 @section Scripts {
     <script src="~/lib/axios/dist/axios.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -107,7 +172,7 @@
         function canAct(irbFromApi) {
             return designation === "HR" || designation === "AGM" || designation === "ACCOUNTS" || empid === irbFromApi;
         }
-
+                     
         function renderStatus(status, rejection) {
             if (rejection === 'reject') return 'Rejected';
             if (status === '0') return 'Pending';
@@ -117,13 +182,31 @@
             if (status === '4') return 'Accepted';
             return status ?? '';
         }
+        
 
-        async function loadGroups() {
-            const emp = empid;
-            const res = await axios.get(`/api/dashboard/details?empid=${emp}&designation=${designation}&type=${type}`);
-            allData = res.data; // store original data
-            renderTable(allData);
+                function showLoader() {
+          document.getElementById("loadingOverlay").style.display = "flex";
         }
+        function hideLoader() {
+          document.getElementById("loadingOverlay").style.display = "none";
+        }
+                async function loadGroups() {
+                    showLoader();
+
+            try {
+                const emp = empid;
+                const res = await axios.get(`/api/dashboard/details?empid=${emp}&designation=${designation}&type=${type}`);
+                allData = res.data;
+                renderTable(allData);
+            } catch (err) {
+                console.error("Error loading groups:", err);
+                alert("Failed to load data");
+            } finally {
+                      hideLoader();
+            }
+        }
+             
+
 
         function renderTable(data) {
             const tbody = document.querySelector('#groupsTable tbody');
@@ -221,9 +304,11 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
         }
 
         async function openGroup(empId, submissionDate, projectCode, irb) {
+                    showLoader();
             currentEmpID = empId;
             currentSubmissionDate = submissionDate;
             currentProjectCode = projectCode;
+
 
             const d = new Date(submissionDate);
             const dateStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
@@ -255,12 +340,13 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
                     <td>${it.billDocument ? '<button class="btn btn-sm btn-outline-primary" onclick="viewBill('+it.id+')">View</button>' : ''}</td>
                     <td><input type="number" class="form-control form-control-sm" value="${rowState[it.id].newAmount}" onchange="updateSanctioned(${it.id}, this.value)" /></td>
                     <td>${canAct(irb) && (it.sanctionedAmount ?? 0) < (it.claimAmount ?? 0) ? `<button class="btn btn-sm btn-warning" onclick="toggleSpecial(${it.id}, ${it.claimAmount})">Special Approve</button>` : ''}</td>
-                    <td><button class="btn btn-sm ${rowState[it.id].rejected ? 'btn-success' : 'btn-danger'}" onclick="toggleReject(${it.id}, this)">${rowState[it.id].rejected ? 'Accept' : 'Reject'}</button></td>
+                            <td>${canAct(irb)?`<button class="btn btn-sm ${rowState[it.id].rejected ? 'btn-success' : 'btn-danger'}" onclick="toggleReject(${it.id}, this)">${rowState[it.id].rejected ? 'Accept' : 'Reject'}</button>`:''}</td>
                 `;
                 tbody.appendChild(tr);
             });
 
-            document.getElementById('groupTitle').innerText = `Group - ${empId} / ${projectCode} / ${new Date(dateStr).toLocaleDateString()}`;
+            document.getElementById('groupTitle').innerText = `EMPID : ${empId}| PROJECT CODE : ${projectCode}| SUBMISSION DATE: ${new Date(dateStr).toLocaleDateString()}`;
+                           document.getElementById('groupTitle').style.backgroundColor = "lightblue"; // or any color
 
             const acceptBtn = document.getElementById('acceptGroupBtn');
             const rejectBtn = document.getElementById('rejectGroupBtn');
@@ -273,7 +359,7 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
                 acceptBtn.style.display = 'none';
                 rejectBtn.style.display = 'none';
             }
-
+            hideLoader();
             new bootstrap.Modal(document.getElementById('groupModal')).show();
         }
 

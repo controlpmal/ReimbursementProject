@@ -23,6 +23,17 @@
     <div class="card-header bg-primary text-white">
         <h5 class="mb-0">Create Expense Entries</h5>
     </div>
+
+    <!-- Loader Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-box">
+            <img src="https://i.gifer.com/ZZ5H.gif" alt="loading" class="loading-icon" />
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+
+
+
     <div class="card-body">
         <!-- Top inputs: SiteName and ProjectCode -->
         <div class="row g-2 align-items-end">
@@ -77,6 +88,62 @@
 
 <!-- ✅ Responsive row styling -->
 <style>
+
+    /* Overlay with blur */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        backdrop-filter: blur(6px); /* 🔥 background blur effect */
+        background: rgba(255, 255, 255, 0.3);
+        display: none; /* hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    /* Box container */
+    .loading-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 30px 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        text-align: center;
+        animation: floaty 2s ease-in-out infinite;
+    }
+
+    /* Floating animation */
+    @@keyframes floaty {
+        0%, 100%
+
+    {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+    }
+
+    /* Icon */
+    .loading-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+    }
+
+    /* Text */
+    .loading-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        font-family: "Inter", sans-serif;
+    }
+
+
+
+
+
     .expense-row {
         border: 1px solid #dee2e6;
         border-radius: 0.5rem;
@@ -160,6 +227,11 @@
             margin-top: 12px;
             padding-top: 12px;
         }
+
+        .expense-row.over-claim {
+            background: #fff8c6 !important; /* overrides gradient */
+        }
+
 
 
     /* Add gradient strip to addPanel */
@@ -435,20 +507,34 @@
                 highlightRow(row);
             }
 
-            function highlightRow(row) {
-                const claim = parseFloat(row.find(".claim-cell").val() || 0);
-                const sanctioned = parseFloat(row.find(".sanctioned-cell").val() || 0);
-                if (claim > sanctioned) row.css("background-color", "#fff8c6");
-                else row.css("background-color", "");
-            }
+                  function highlightRow(row) {
+            const claim = parseFloat(row.find(".claim-cell").val() || 0);
+            const sanctioned = parseFloat(row.find(".sanctioned-cell").val() || 0);
+
+            if (claim > sanctioned) row.addClass("over-claim");
+            else row.removeClass("over-claim");
+        }
+
 
             // clear/submit
             $("#btnClear").click(() => $("#expenseRows").empty());
+
+                    // Helper functions
+        function showLoader() {
+            $("#loadingOverlay").fadeIn(200);
+        }
+        function hideLoader() {
+            $("#loadingOverlay").fadeOut(200);
+        }
+
+
 
             $("#btnSubmit").click(async () => {
                 const site = $("#siteName").val().trim();
                 const project = $("#projectCode").val().trim();
                 if (!site || !project) { alert("Enter site name and project code."); return; }
+                      // show loader before starting request
+        showLoader();
 
                 const rows = [];
                 const filesToSend = {};
@@ -505,7 +591,7 @@
                 });
 
                 if (!valid) return;
-                if (!rows.length) { alert("Add some rows first."); return; }
+                if (!rows.length) { alert("Add some rows first.");hideLoader(); return; }
 
                 const fd = new FormData();
                 fd.append("EmpID", EmpID);
@@ -519,7 +605,9 @@
                 try {
                     const res = await axios.post(submitApi, fd, { headers: { "Content-Type": "multipart/form-data" } });
                     if (res.data?.success) {
+                          hideLoader();
                         alert("Saved successfully");
+                        
                         $("#expenseRows").empty();
                     } else {
                         alert("Save failed: " + (res.data?.message || "Unknown"));
@@ -528,6 +616,10 @@
                     console.error(err);
                     alert("Error saving data");
                 }
+                    finally {
+            // always hide loader after request
+            hideLoader();
+        }
             });
         });
     </script>
