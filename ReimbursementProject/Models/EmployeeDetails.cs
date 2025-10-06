@@ -10,6 +10,7 @@ namespace ReimbursementProject.Models
 
         [StringLength(100)]
         public string? EmpName { get; set; }  // varchar(100)
+        public string? MailID { get; set; }
 
         [StringLength(100)]
         public string? Designation { get; set; }  // varchar(100)

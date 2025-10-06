@@ -346,7 +346,9 @@ namespace ReimbursementProject.Controllers
                 .Where(e => e.EmpID == empid
                             && e.ExpenseID == expenseId
                             && e.SubmissionDate.HasValue
-                            && e.SubmissionDate.Value.Date == submissionDate.Date) // simple comparison
+                            && e.SubmissionDate.Value.Date == submissionDate.Date)
+                .OrderBy(e => e.DateofExpense) // ✅ ascending order by date
+                                               // .OrderByDescending(e => e.DateofExpense) // 👈 use this if you want latest first
                 .Select(e => new ExpenseItemDto
                 {
                     ID = e.ID,

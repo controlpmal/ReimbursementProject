@@ -13,6 +13,14 @@
         window.location.href = "/Home/Login";
     </script>
 }
+<!-- Loader Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-box">
+        <img src="https://i.gifer.com/ZZ5H.gif" alt="loading" class="loading-icon" />
+        <p class="loading-text">Loading...</p>
+    </div>
+</div>
+
 
 <div class="container mt-5">
     <div class="row text-center">
@@ -120,19 +128,81 @@
                 background-color: rgba(255, 255, 255, 0.35);
                 transform: scale(1.02);
             }
+
+
+    /* Overlay with blur */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        backdrop-filter: blur(6px); /* 🔥 background blur effect */
+        background: rgba(255, 255, 255, 0.3);
+        display: none; /* hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    /* Box container */
+    .loading-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 30px 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        text-align: center;
+        animation: floaty 2s ease-in-out infinite;
+    }
+
+    /* Floating animation */
+    @@keyframes floaty {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-6px);
+        }
+    }
+
+    /* Icon */
+    .loading-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+    }
+
+    /* Text */
+    .loading-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        font-family: "Inter", sans-serif;
+    }
+
+
 </style>
 
 @section Scripts {
     <script src="~/lib/axios/dist/axios.min.js"></script>
 
     <script>
+
+
+             function showLoader() {
+          document.getElementById("loadingOverlay").style.display = "flex";
+        }
+        function hideLoader() {
+          document.getElementById("loadingOverlay").style.display = "none";
+        }
         document.addEventListener("DOMContentLoaded", function () {
             // ✅ Values injected from Claims
+
+            
             const empid = "@empid";
             const designation = "@designation";
 
             function reload() {
-                axios.get(`/api/dashboard/pending?empid=${empid}&designation=${designation}`)
+                
+                     axios.get(`/api/dashboard/pending?empid=${empid}&designation=${designation}`)
                     .then(res => document.getElementById("pendingCount").innerText = res.data);
 
                 axios.get(`/api/dashboard/approved?empid=${empid}&designation=${designation}`)
@@ -140,6 +210,10 @@
 
                 axios.get(`/api/dashboard/rejected?empid=${empid}&designation=${designation}`)
                     .then(res => document.getElementById("rejectedCount").innerText = res.data);
+                
+               
+
+               
             }
 
             reload();
@@ -148,17 +222,35 @@
             // ✅ HR cards visible only for HR designation
             if (designation === "HR") {
                 document.getElementById("hrCards").style.display = "flex";
-
-                axios.get(`/api/employee/new`)
-                    .then(res => {
-                        const preview = document.getElementById("employeePreview");
-                        preview.innerHTML = "";
-                        res.data.forEach(emp => {
-                            const li = document.createElement("li");
-                            li.textContent = emp.empName;
-                            preview.appendChild(li);
-                        });
-                    });
+                function loadNewEmployees() {
+                  
+                    axios.get(`/api/employee/new`)
+                        .then(res => {
+                            const preview = document.getElementById("employeePreview");
+                            preview.innerHTML = "";
+                            res.data.forEach(emp => {
+                                const li = document.createElement("li");
+                                li.textContent = emp.empName;
+                                preview.appendChild(li);
+                            });
+                        })
+                        .catch(err => {
+                            console.error("Error loading new employees:", err);
+                        })
+                      
+                }
+                loadNewEmployees();
+                setInterval(loadNewEmployees, 10000); // Refresh every 10 seconds
+                // axios.get(`/api/employee/new`)
+                //     .then(res => {
+                //         const preview = document.getElementById("employeePreview");
+                //         preview.innerHTML = "";
+                //         res.data.forEach(emp => {
+                //             const li = document.createElement("li");
+                //             li.textContent = emp.empName;
+                //             preview.appendChild(li);
+                //         });
+                //     });
             }
         });
     </script>

@@ -401,6 +401,7 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
 
         // Accept group
         document.getElementById('acceptGroupBtn').onclick = async () => {
+            showLoader();
             const rows = Object.keys(rowState).map(k => ({
                 ItemId: parseInt(k),
                 IsRejected: rowState[k].rejected,
@@ -419,11 +420,13 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
             });
 
             bootstrap.Modal.getInstance(document.getElementById('groupModal')).hide();
+            hideLoader();
             loadGroups();
         };
 
         // Reject group
         document.getElementById('rejectGroupBtn').onclick = async () => {
+            showLoader();
             await axios.post('/api/dashboard/reject-group', {
                 EmpID: currentEmpID,
                 SubmissionDate: currentSubmissionDate,
@@ -433,6 +436,7 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
             });
 
             bootstrap.Modal.getInstance(document.getElementById('groupModal')).hide();
+            hideLoader();
             loadGroups();
         };
 

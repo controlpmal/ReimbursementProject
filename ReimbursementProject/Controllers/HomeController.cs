@@ -21,7 +21,8 @@ namespace locationget.Controllers
 
         public IActionResult Index()
         {
-            // ✅ Count unique pending submissions
+            
+           
             var pendingCount = _context.ExpenseLogBook
                 .Where(e => e.Status == "0")  // pending rows only
                 .GroupBy(e => new { e.EmpID, e.SubmissionDate, e.ProjectCode })
@@ -44,6 +45,7 @@ namespace locationget.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            TempData["success"] = "login the user";
             return View(); // This will load Views/Account/Login.cshtml
         }
         [HttpGet]
@@ -180,7 +182,7 @@ namespace locationget.Controllers
 
         // POST: Home/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
+       
         public IActionResult Edit(List<ExpenseLogBook> updatedExpenses)
         {
             if (updatedExpenses == null || !updatedExpenses.Any())

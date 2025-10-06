@@ -12,6 +12,8 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace ReimbursementProject.Controllers
 {
@@ -33,6 +35,7 @@ namespace ReimbursementProject.Controllers
         public IActionResult GetEmployees1()
         {
             var employees = _context.EmployeeDetails.ToList();
+         
             return Ok(employees);
         }
 
@@ -68,9 +71,10 @@ namespace ReimbursementProject.Controllers
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
                 new AuthenticationProperties { IsPersistent = false, ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30) });
-
+            
             // Optionally also set small server session values (not required):
             HttpContext.Session.SetString("EmpID", employee.EmpID);
+            
          
 
             return Ok(new { success = true, redirectUrl = Url.Action("Index", "Home") });
@@ -241,6 +245,43 @@ namespace ReimbursementProject.Controllers
             return Ok(new { message = "Registration successful. Waiting for HR approval" });
         }
 
+        // GET api/email/send?toEmail=someone@example.com
+        [HttpGet("send")]
+        public IActionResult SendOtp(string toEmail)
+        {
+            try
+            {
+                // 1. Generate 4-digit random OTP
+                Random random = new Random();
+                string otp = random.Next(1000, 9999).ToString();
+
+                // 2. Create email message
+                var emailMessage = new MimeMessage();
+                emailMessage.From.Add(new MailboxAddress("PMAL Control", "pmalcontrol@gmail.com"));
+                emailMessage.To.Add(new MailboxAddress("", toEmail));
+                emailMessage.Subject = "Your OTP Code";
+                emailMessage.Body = new TextPart("plain")
+                {
+                    Text = $"Hello,\n\nYour OTP is: {otp}\n\nRegards,\nPMAL Control"
+                };
+
+                // 3. Send email via Gmail SMTP
+                using (var client = new SmtpClient())
+                {
+                    client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    client.Authenticate("pmalcontrol@gmail.com", "Control@32");
+                    client.Send(emailMessage);
+                    client.Disconnect(true);
+                }
+
+                // 4. Return OTP in API response (for testing only)
+                return Ok(new { Success = true, OTP = otp, Message = "OTP sent successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Success = false, Message = ex.Message });
+            }
+        }
 
 
 

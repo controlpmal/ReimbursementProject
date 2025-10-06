@@ -1,0 +1,41 @@
+﻿@if (TempData["success"] != null)
+{
+    var message = TempData["success"].ToString();
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var message = '@message';
+            toastr.success(message);
+
+            // Send to server
+            $.ajax({
+                type: "POST",
+                url: '/Dashboard/Log',
+                data: JSON.stringify({ message: message }),
+                contentType: "application/json"
+            });
+        });
+    </script>
+}
+
+@if (TempData["error"] != null)
+{
+    var message = TempData["error"].ToString();
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var message = '@message';
+            toastr.error(message);
+
+            // Send to server
+            $.ajax({
+                type: "POST",
+                url: '/Notification/Log',
+                data: JSON.stringify({ message: message }),
+                contentType: "application/json"
+            });
+        });
+    </script>
+}
