@@ -43,6 +43,15 @@
         </div>
     </div>
 </div>
+<!-- Loader Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-box">
+        <img src="https://i.gifer.com/ZZ5H.gif" alt="loading" class="loading-icon" />
+        <p class="loading-text">Loading...</p>
+    </div>
+</div>
+
+
 <!-- Forgot Password Modal -->
 <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -84,26 +93,100 @@
         </div>
     </div>
 </div>
+<style>
+
+    /* Overlay with blur */
+    .loading-overlay {
+        position: fixed;
+        inset: 0;
+        backdrop-filter: blur(6px); /* 🔥 background blur effect */
+        background: rgba(255, 255, 255, 0.3);
+        display: none; /* hidden by default */
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    /* Box container */
+    .loading-box {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 30px 40px;
+        border-radius: 20px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        text-align: center;
+        animation: floaty 2s ease-in-out infinite;
+    }
+
+    /* Floating animation */
+    @@keyframes floaty {
+        0%, 100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-6px);
+        }
+    }
+
+    /* Icon */
+    .loading-icon {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 12px;
+    }
+
+    /* Text */
+    .loading-text {
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        font-family: "Inter", sans-serif;
+    }
+
+</style>
+
+
 <script>
     function showForgotPassword() {
         const modal = new bootstrap.Modal(document.getElementById("forgotPasswordModal"));
         modal.show();
     }
 
+        function showLoader() {
+          document.getElementById("loadingOverlay").style.display = "flex";
+        }
+        function hideLoader() {
+          document.getElementById("loadingOverlay").style.display = "none";
+        }
     function sendOtp() {
         const empId = document.getElementById("fpEmpId").value.trim();
-        if (!empId) return alert("Please enter Employee ID");
+        const messageBox = document.getElementById("fpMsg");
+
+        if (!empId) {
+            alert("Please enter Employee ID");
+            return;
+        }
+
+        // Show loader before sending request
+        showLoader();
+        messageBox.innerText = "";
 
         axios.post("/api/employee/forgot-password", JSON.stringify(empId), {
             headers: { "Content-Type": "application/json" }
         }).then(res => {
+            // On success, show next step
             document.getElementById("step1").classList.add("d-none");
             document.getElementById("step2").classList.remove("d-none");
-            document.getElementById("fpMsg").innerText = res.data.message;
+            messageBox.innerText = res.data.message;
         }).catch(err => {
-            document.getElementById("fpMsg").innerText = err.response?.data?.message || "Error sending OTP.";
+            // On error, show message
+            messageBox.innerText = err.response?.data?.message || "Error sending OTP.";
+        }).finally(() => {
+            // Always hide loader
+            hideLoader();
         });
     }
+
 
     function verifyOtp() {
         const otp = document.getElementById("otpInput").value.trim();
