@@ -249,41 +249,41 @@ namespace ReimbursementProject.Controllers
 
 
 
-        [HttpGet("send")]
-        public IActionResult SendOtp(string toEmail)
-        {
-            try
-            {
-                // Generate OTP
-                Random random = new Random();
-                string otp = random.Next(1000, 9999).ToString();
+        //[HttpGet("send")]
+        //public IActionResult SendOtp(string toEmail)
+        //{
+        //    try
+        //    {
+        //        // Generate OTP
+        //        Random random = new Random();
+        //        string otp = random.Next(1000, 9999).ToString();
 
-                // Create email
-                var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("PMAL Control", _emailSettings.Email));
-                emailMessage.To.Add(new MailboxAddress("", toEmail));
-                emailMessage.Subject = "Your OTP Code";
-                emailMessage.Body = new TextPart("plain")
-                {
-                    Text = $"Hello,\n\nYour OTP is: {otp}\n\nRegards,\nPMAL Control"
-                };
+        //        // Create email
+        //        var emailMessage = new MimeMessage();
+        //        emailMessage.From.Add(new MailboxAddress("PMAL Control", _emailSettings.Email));
+        //        emailMessage.To.Add(new MailboxAddress("", toEmail));
+        //        emailMessage.Subject = "Your OTP Code";
+        //        emailMessage.Body = new TextPart("plain")
+        //        {
+        //            Text = $"Hello,\n\nYour OTP is: {otp}\n\nRegards,\nPMAL Control"
+        //        };
 
-                // Send email
-                using (var client = new SmtpClient())
-                {
-                    client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    client.Authenticate(_emailSettings.Email, _emailSettings.Password);
-                    client.Send(emailMessage);
-                    client.Disconnect(true);
-                }
+        //        // Send email
+        //        using (var client = new SmtpClient())
+        //        {
+        //            client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+        //            client.Authenticate(_emailSettings.Email, _emailSettings.Password);
+        //            client.Send(emailMessage);
+        //            client.Disconnect(true);
+        //        }
 
-                return Ok(new { Success = true, OTP = otp, Message = "OTP sent successfully!" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Success = false, Message = ex.Message });
-            }
-        }
+        //        return Ok(new { Success = true, OTP = otp, Message = "OTP sent successfully!" });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { Success = false, Message = ex.Message });
+        //    }
+        //}
 
 
 
@@ -422,7 +422,7 @@ namespace ReimbursementProject.Controllers
                     empDesignation=e.Designation,
                     empIrb=e.IRB,
                     empDepartment=e.Dept,
-                    empMail = e.MailID, // ⬅️ Add this line
+                    //empMail = e.MailID, // ⬅️ Add this line
                     photoUrl = "/uploads/employees/" + e.EmpID + ".jpg" // store photos with EmpID.jpg
                 })
                 .ToList();
@@ -442,7 +442,7 @@ namespace ReimbursementProject.Controllers
             emp.Level = updatedEmp.Level;
             emp.Designation = updatedEmp.Designation;
             emp.Dept = updatedEmp.Dept;
-            emp.MailID = updatedEmp.MailID; // ⬅️ Add this line
+            //emp.MailID = updatedEmp.MailID; // ⬅️ Add this line
 
             // Approve employee
             emp.Status = "OK";
@@ -486,7 +486,7 @@ namespace ReimbursementProject.Controllers
             emp.Dept = updated.Dept;
             emp.AdvanceAmount = updated.AdvanceAmount;
             emp.Password = updated.Password;
-            emp.MailID = updated.MailID;
+            //emp.MailID = updated.MailID;
 
             _context.SaveChanges();
 
@@ -519,85 +519,85 @@ namespace ReimbursementProject.Controllers
 
 
 
-        [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword([FromBody] string empId)
-        {
-            var employee = _context.EmployeeDetails.FirstOrDefault(e => e.EmpID == empId);
-            if (employee == null || string.IsNullOrWhiteSpace(employee.MailID))
-                return NotFound(new { success = false, message = "Employee not found or email not available." });
+        //[HttpPost("forgot-password")]
+        //public IActionResult ForgotPassword([FromBody] string empId)
+        //{
+        //    var employee = _context.EmployeeDetails.FirstOrDefault(e => e.EmpID == empId);
+        //    if (employee == null || string.IsNullOrWhiteSpace(employee.MailID))
+        //        return NotFound(new { success = false, message = "Employee not found or email not available." });
 
-            // Reuse your SendOtp logic
-            Random random = new Random();
-            string otp = random.Next(1000, 9999).ToString();
+        //    // Reuse your SendOtp logic
+        //    Random random = new Random();
+        //    string otp = random.Next(1000, 9999).ToString();
 
-            try
-            {
-                var emailMessage = new MimeMessage();
-                emailMessage.From.Add(new MailboxAddress("PMAL Control", "pmalcontrol@gmail.com"));
-                emailMessage.To.Add(new MailboxAddress("", employee.MailID));
-                emailMessage.Subject = "Your OTP Code";
-                emailMessage.Body = new TextPart("plain")
-                {
-                    Text = $"Hello {employee.EmpName},\n\nYour OTP is: {otp}\n\nRegards,\nPMAL Control"
-                };
+        //    try
+        //    {
+        //        var emailMessage = new MimeMessage();
+        //        emailMessage.From.Add(new MailboxAddress("PMAL Control", "pmalcontrol@gmail.com"));
+        //        emailMessage.To.Add(new MailboxAddress("", employee.MailID));
+        //        emailMessage.Subject = "Your OTP Code";
+        //        emailMessage.Body = new TextPart("plain")
+        //        {
+        //            Text = $"Hello {employee.EmpName},\n\nYour OTP is: {otp}\n\nRegards,\nPMAL Control"
+        //        };
 
-                using (var client = new SmtpClient())
-                {
-                    client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                    client.Authenticate(_emailSettings.Email, _emailSettings.Password);
-                    client.Send(emailMessage);
-                    client.Disconnect(true);
-                }
+        //        using (var client = new SmtpClient())
+        //        {
+        //            client.Connect("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+        //            client.Authenticate(_emailSettings.Email, _emailSettings.Password);
+        //            client.Send(emailMessage);
+        //            client.Disconnect(true);
+        //        }
 
-                // Store OTP in TempData / Memory / Cache / or return it for now (not safe for production)
-                HttpContext.Session.SetString("ResetOtp", otp);
-                HttpContext.Session.SetString("ResetEmpId", empId);
+        //        // Store OTP in TempData / Memory / Cache / or return it for now (not safe for production)
+        //        HttpContext.Session.SetString("ResetOtp", otp);
+        //        HttpContext.Session.SetString("ResetEmpId", empId);
 
-                return Ok(new { success = true, message = "OTP sent to your registered email." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
-
-
-        [HttpPost("verify-otp")]
-        public IActionResult VerifyOtp([FromBody] string enteredOtp)
-        {
-            var storedOtp = HttpContext.Session.GetString("ResetOtp");
-            if (storedOtp == enteredOtp)
-            {
-                return Ok(new { success = true, message = "OTP verified" });
-            }
-
-            return BadRequest(new { success = false, message = "Invalid OTP" });
-        }
+        //        return Ok(new { success = true, message = "OTP sent to your registered email." });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { success = false, message = ex.Message });
+        //    }
+        //}
 
 
-        [HttpPost("reset-password")]
-        public IActionResult ResetPassword([FromBody] PasswordResetModel model)
-        {
-            var empId = HttpContext.Session.GetString("ResetEmpId");
-            if (string.IsNullOrEmpty(empId)) return Unauthorized();
 
-            var emp = _context.EmployeeDetails.FirstOrDefault(e => e.EmpID == empId);
-            if (emp == null) return NotFound(new { success = false, message = "Employee not found" });
+        //[HttpPost("verify-otp")]
+        //public IActionResult VerifyOtp([FromBody] string enteredOtp)
+        //{
+        //    var storedOtp = HttpContext.Session.GetString("ResetOtp");
+        //    if (storedOtp == enteredOtp)
+        //    {
+        //        return Ok(new { success = true, message = "OTP verified" });
+        //    }
 
-            emp.Password = model.NewPassword;
-            _context.SaveChanges();
+        //    return BadRequest(new { success = false, message = "Invalid OTP" });
+        //}
 
-            HttpContext.Session.Remove("ResetEmpId");
-            HttpContext.Session.Remove("ResetOtp");
 
-            return Ok(new { success = true, message = "Password updated successfully" });
-        }
+        //[HttpPost("reset-password")]
+        //public IActionResult ResetPassword([FromBody] PasswordResetModel model)
+        //{
+        //    var empId = HttpContext.Session.GetString("ResetEmpId");
+        //    if (string.IsNullOrEmpty(empId)) return Unauthorized();
 
-        public class PasswordResetModel
-        {
-            public string NewPassword { get; set; }
-        }
+        //    var emp = _context.EmployeeDetails.FirstOrDefault(e => e.EmpID == empId);
+        //    if (emp == null) return NotFound(new { success = false, message = "Employee not found" });
+
+        //    emp.Password = model.NewPassword;
+        //    _context.SaveChanges();
+
+        //    HttpContext.Session.Remove("ResetEmpId");
+        //    HttpContext.Session.Remove("ResetOtp");
+
+        //    return Ok(new { success = true, message = "Password updated successfully" });
+        //}
+
+        //public class PasswordResetModel
+        //{
+        //    public string NewPassword { get; set; }
+        //}
 
 
 

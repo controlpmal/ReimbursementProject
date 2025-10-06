@@ -18,23 +18,30 @@
                     <div class="form-group mb-3">
                         <label for="password"><i class="fas fa-key"></i> Password</label>
                         <div class="input-group rounded-pill">
-                            <input type="password" id="password" class="form-control rounded-pill " placeholder="Enter Password" />
-                            <button class="btn " type="button" id="togglePassword">
+                            <input type="password" id="password" class="form-control rounded-pill" placeholder="Enter Password" />
+                            <button class="btn" type="button" id="togglePassword">
                                 <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary rounded-pill" onclick="login()"><i class="fas fa-sign-in-alt"></i> Login</button>
+                        <button class="btn btn-primary rounded-pill" onclick="login()">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
                         <a class="btn btn-outline-secondary rounded-pill" asp-controller="Home" asp-action="Register">
-                            <i class="fas fa-user-plus "></i> Register
+                            <i class="fas fa-user-plus"></i> Register
                         </a>
                     </div>
+
                     <div class="text-center mt-2">
                         <a href="#" onclick="showForgotPassword()">Forgot Password?</a>
                     </div>
 
+                    <!-- Alert message -->
+                    <div id="alertBox" class="alert alert-warning mt-3 d-none text-center fw-semibold" role="alert">
+                        Please contact HR for password reset.
+                    </div>
 
                     <p id="error" class="text-danger mt-3 text-center"></p>
                     <p id="success" class="text-success mt-3 text-center"></p>
@@ -43,6 +50,7 @@
         </div>
     </div>
 </div>
+
 <!-- Loader Overlay -->
 <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-box">
@@ -51,63 +59,19 @@
     </div>
 </div>
 
-
-<!-- Forgot Password Modal -->
-<div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content p-3">
-            <div class="modal-header">
-                <h5 class="modal-title">Reset Password</h5>
-                <button class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="step1">
-                    <label>Employee ID</label>
-                    <input type="text" id="fpEmpId" class="form-control mb-2" />
-                    <button class="btn btn-primary w-100" onclick="sendOtp()">Send OTP</button>
-                </div>
-
-                <div id="step2" class="d-none">
-                    <label>Enter OTP</label>
-                    <input type="text" id="otpInput" class="form-control mb-2" />
-                    <button class="btn btn-success w-100" onclick="verifyOtp()">Verify OTP</button>
-                </div>
-
-                <div id="step3" class="d-none">
-                    <label>New Password</label>
-                    <div class="input-group mb-2">
-                        <input type="password" id="newPassword" class="form-control" />
-                        <button class="btn btn-outline-secondary" onclick="toggleNewPassword(this)"><i class="fas fa-eye"></i></button>
-                    </div>
-                    <label>Confirm Password</label>
-                    <div class="input-group mb-2">
-                        <input type="password" id="confirmPassword" class="form-control" />
-                        <button class="btn btn-outline-secondary" onclick="toggleNewPassword(this)"><i class="fas fa-eye"></i></button>
-                    </div>
-                    <div class="text-danger mb-2" id="passwordError" style="display:none;"></div>
-                    <button class="btn btn-warning w-100" onclick="resetPassword()">Reset Password</button>
-                </div>
-
-                <p id="fpMsg" class="text-center mt-2"></p>
-            </div>
-        </div>
-    </div>
-</div>
 <style>
-
     /* Overlay with blur */
     .loading-overlay {
         position: fixed;
         inset: 0;
-        backdrop-filter: blur(6px); /* 🔥 background blur effect */
+        backdrop-filter: blur(6px);
         background: rgba(255, 255, 255, 0.3);
-        display: none; /* hidden by default */
+        display: none;
         justify-content: center;
         align-items: center;
         z-index: 2000;
     }
 
-    /* Box container */
     .loading-box {
         background: rgba(255, 255, 255, 0.8);
         padding: 30px 40px;
@@ -117,7 +81,6 @@
         animation: floaty 2s ease-in-out infinite;
     }
 
-    /* Floating animation */
     @@keyframes floaty {
         0%, 100% {
             transform: translateY(0px);
@@ -128,120 +91,35 @@
         }
     }
 
-    /* Icon */
     .loading-icon {
         width: 64px;
         height: 64px;
         margin-bottom: 12px;
     }
 
-    /* Text */
     .loading-text {
         font-size: 16px;
         font-weight: 500;
         color: #333;
         font-family: "Inter", sans-serif;
     }
-
 </style>
-
 
 <script>
     function showForgotPassword() {
-        const modal = new bootstrap.Modal(document.getElementById("forgotPasswordModal"));
-        modal.show();
+        const alertBox = document.getElementById("alertBox");
+        alertBox.classList.remove("d-none");
+        alertBox.scrollIntoView({ behavior: "smooth" });
     }
 
-        function showLoader() {
-          document.getElementById("loadingOverlay").style.display = "flex";
-        }
-        function hideLoader() {
-          document.getElementById("loadingOverlay").style.display = "none";
-        }
-    function sendOtp() {
-        const empId = document.getElementById("fpEmpId").value.trim();
-        const messageBox = document.getElementById("fpMsg");
-
-        if (!empId) {
-            alert("Please enter Employee ID");
-            return;
-        }
-
-        // Show loader before sending request
-        showLoader();
-        messageBox.innerText = "";
-
-        axios.post("/api/employee/forgot-password", JSON.stringify(empId), {
-            headers: { "Content-Type": "application/json" }
-        }).then(res => {
-            // On success, show next step
-            document.getElementById("step1").classList.add("d-none");
-            document.getElementById("step2").classList.remove("d-none");
-            messageBox.innerText = res.data.message;
-        }).catch(err => {
-            // On error, show message
-            messageBox.innerText = err.response?.data?.message || "Error sending OTP.";
-        }).finally(() => {
-            // Always hide loader
-            hideLoader();
-        });
+    function showLoader() {
+        document.getElementById("loadingOverlay").style.display = "flex";
     }
 
-
-    function verifyOtp() {
-        const otp = document.getElementById("otpInput").value.trim();
-        if (!otp) return alert("Enter OTP");
-
-        axios.post("/api/employee/verify-otp", JSON.stringify(otp), {
-            headers: { "Content-Type": "application/json" }
-        }).then(res => {
-            document.getElementById("step2").classList.add("d-none");
-            document.getElementById("step3").classList.remove("d-none");
-            document.getElementById("fpMsg").innerText = res.data.message;
-        }).catch(err => {
-            document.getElementById("fpMsg").innerText = err.response?.data?.message || "Invalid OTP";
-        });
+    function hideLoader() {
+        document.getElementById("loadingOverlay").style.display = "none";
     }
 
-    function toggleNewPassword(btn) {
-        const input = btn.previousElementSibling;
-        input.type = input.type === "password" ? "text" : "password";
-        const icon = btn.querySelector("i");
-        icon.classList.toggle("fa-eye");
-        icon.classList.toggle("fa-eye-slash");
-    }
-
-    function resetPassword() {
-        const newPass = document.getElementById("newPassword").value.trim();
-        const confirmPass = document.getElementById("confirmPassword").value.trim();
-        const errorBox = document.getElementById("passwordError");
-
-        if (!newPass || !confirmPass) {
-            errorBox.innerText = "Please fill both password fields.";
-            errorBox.style.display = "block";
-            return;
-        }
-
-        if (newPass !== confirmPass) {
-            errorBox.innerText = "Passwords do not match.";
-            errorBox.style.display = "block";
-            return;
-        }
-
-        errorBox.style.display = "none";
-
-        axios.post("/api/employee/reset-password", { newPassword: newPass })
-            .then(res => {
-                alert("Password reset successfully. Please log in.");
-                location.reload();
-            }).catch(err => {
-                alert("Failed to reset password.");
-            });
-    }
-</script>
-
-
-<script>
     // Toggle password visibility
     document.getElementById("togglePassword").addEventListener("click", function () {
         const passwordInput = document.getElementById("password");
@@ -273,16 +151,21 @@
         }
 
         try {
+            showLoader();
             const res = await axios.post("/api/Employee/DoLogin", { EmpId: empId, Password: password });
 
             if (res.data && res.data.success) {
                 successBox.innerText = "Login successful!";
                 window.location.href = res.data.redirectUrl || "/Home/Index";
+            } else {
+                errorBox.innerText = res.data?.message || "Invalid login details.";
             }
         } catch (err) {
             console.error(err);
             const msg = err.response?.data?.message ?? "Error connecting to server.";
             errorBox.innerText = msg;
+        } finally {
+            hideLoader();
         }
     }
 </script>

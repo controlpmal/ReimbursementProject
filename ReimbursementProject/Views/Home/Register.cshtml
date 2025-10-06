@@ -13,7 +13,10 @@
 
                 <div class="card-body p-4">
                     <!-- Global Alert -->
-                    <div id="registerAlert" class="alert d-none" role="alert"></div>
+                    <div id="registerAlert" class="alert d-none alert-dismissible fade show" role="alert">
+                        <span id="registerAlertMessage"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
 
                     <form id="registerForm" novalidate>
                         <!-- Employee ID + Name -->
@@ -51,37 +54,6 @@
                             </div>
                         </div>
 
-                        <!-- Email + OTP -->
-                        <div class="row align-items-end">
-                            <div class="col-md-7 mb-3">
-                                <label class="form-label fw-semibold">
-                                    <i class="fas fa-envelope"></i> Email Address
-                                </label>
-                                <input type="email" id="emailID" class="form-control rounded-pill" placeholder="Enter Email" required />
-                                <div class="invalid-feedback" id="EmailError"></div>
-                            </div>
-                            <div class="col-md-5 mb-3 text-end">
-                                <button type="button" id="sendOtpBtn" class="btn btn-success rounded-pill py-2 fw-semibold w-100">
-                                    <i class="fas fa-paper-plane"></i> Send OTP
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="row align-items-end">
-                            <div class="col-md-7 mb-3">
-                                <label class="form-label fw-semibold">
-                                    <i class="fas fa-key"></i> OTP
-                                </label>
-                                <input type="text" id="otp" class="form-control rounded-pill" placeholder="Enter OTP" required />
-                                <div class="invalid-feedback" id="OtpError"></div>
-                            </div>
-                            <div class="col-md-5 mb-3 text-end">
-                                <button type="button" id="verifyOtpBtn" class="btn btn-outline-warning rounded-pill py-2 fw-semibold w-100">
-                                    <i class="fas fa-check-circle"></i> Verify
-                                </button>
-                            </div>
-                        </div>
-
                         <!-- Password + Confirm Password -->
                         <div class="row">
                             <div class="col-md-6 mb-3 position-relative">
@@ -112,6 +84,7 @@
                             <button type="submit" id="registerBtn" class="btn btn-success rounded-pill py-2 fw-semibold" disabled>
                                 <i class="fas fa-paper-plane"></i> Register
                             </button>
+                            <small id="formHint" class="text-danger text-center mt-2 d-none">Please fill all required fields correctly.</small>
                         </div>
                     </form>
 
@@ -128,17 +101,54 @@
 
 @section Scripts {
     <script>
-        let generatedOtp = null;
-        let isOtpVerified = false;
-
         function showAlert(message, type) {
             const alertBox = $("#registerAlert");
+            const alertMessage = $("#registerAlertMessage");
+
             alertBox.removeClass("d-none alert-success alert-danger alert-warning");
-            alertBox.addClass("alert-" + type).text(message);
+            alertBox.addClass("alert-" + type);
+            alertMessage.text(message);
+
+            // Show the alert
+            alertBox.addClass("show");
+
+            // Scroll to top smoothly
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         $(function () {
+            const empIdInput = $("#EmpID");
+            const empNameInput = $("#EmpName");
+            const passwordInput = $("#Password");
+            const confirmPasswordInput = $("#ConfirmPassword");
+            const registerBtn = $("#registerBtn");
+            const formHint = $("#formHint");
+
+            // 🔒 Initially disable the register button
+            registerBtn.prop("disabled", true);
+
+            // 🧠 Check all input conditions
+            function checkForm() {
+                const empId = empIdInput.val().trim();
+                const empName = empNameInput.val().trim();
+                const password = passwordInput.val().trim();
+                const confirmPassword = confirmPasswordInput.val().trim();
+
+                const allFilled = empId && empName && password && confirmPassword;
+                const passwordsMatch = password === confirmPassword;
+
+                if (allFilled && passwordsMatch) {
+                    registerBtn.prop("disabled", false);
+                    formHint.addClass("d-none");
+                } else {
+                    registerBtn.prop("disabled", true);
+                    formHint.removeClass("d-none");
+                }
+            }
+
+            // 🔁 Monitor input fields
+            $("#EmpID, #EmpName, #Password, #ConfirmPassword").on("input", checkForm);
+
             // 👁️ Toggle Password Visibility
             $("#togglePassword").click(function () {
                 const input = $("#Password");
@@ -156,96 +166,35 @@
                 icon.toggleClass("fa-eye fa-eye-slash");
             });
 
-            // ✅ Send OTP
-            $("#sendOtpBtn").click(function () {
-                const email = $("#emailID").val().trim();
-                if (!email) {
-                    $("#EmailError").text("Email is required.").show();
-                    $("#emailID").addClass("is-invalid");
-                    return;
-                }
-
-                $("#EmailError").text("");
-                $("#emailID").removeClass("is-invalid");
-
-                $("#sendOtpBtn").prop("disabled", true).text("Sending...");
-
-                $.ajax({
-                    url: `/api/Employee/send?toEmail=${encodeURIComponent(email)}`,
-                    type: "GET",
-                    success: function (res) {
-                        generatedOtp = res.otp || res.OTP;
-                        showAlert("OTP sent successfully to your email.", "success");
-                        $("#sendOtpBtn").text("Resend OTP").prop("disabled", false);
-                    },
-                    error: function (xhr) {
-                        showAlert(xhr.responseJSON?.message || "Failed to send OTP.", "danger");
-                        $("#sendOtpBtn").text("Send OTP").prop("disabled", false);
-                    }
-                });
-            });
-
-            // ✅ Verify OTP
-            $("#verifyOtpBtn").click(function () {
-                const enteredOtp = $("#otp").val().trim();
-
-                if (!generatedOtp) {
-                    showAlert("Please send OTP first!", "warning");
-                    return;
-                }
-
-                if (enteredOtp === generatedOtp) {
-                    isOtpVerified = true;
-                    $("#verifyOtpBtn").removeClass("btn-outline-warning").addClass("btn-success")
-                        .html('<i class="fas fa-check"></i> Verified');
-                    showAlert("Email verified successfully!", "success");
-                    $("#registerBtn").prop("disabled", false);
-                } else {
-                    showAlert("Invalid OTP. Please try again.", "danger");
-                    $("#otp").addClass("is-invalid");
-                    $("#OtpError").text("Invalid OTP entered.");
-                }
-            });
-
             // ✅ Register Submit
             $("#registerForm").on("submit", function (e) {
                 e.preventDefault();
                 $(".invalid-feedback").text("");
                 $("input").removeClass("is-invalid");
 
-                const empId = $("#EmpID").val().trim();
-                const empName = $("#EmpName").val().trim();
+                const empId = empIdInput.val().trim();
+                const empName = empNameInput.val().trim();
                 const designation = $("#Designation").val().trim();
                 const dept = $("#Dept").val().trim();
-                const email = $("#emailID").val().trim();
-                const password = $("#Password").val().trim();
-                const confirmPassword = $("#ConfirmPassword").val().trim();
+                const password = passwordInput.val().trim();
+                const confirmPassword = confirmPasswordInput.val().trim();
 
                 let valid = true;
 
-                // 🔹 Employee ID Validation
                 if (!empId.startsWith("PMA")) {
                     $("#EmpIDError").text("Employee ID must start with 'PMA'.");
-                    $("#EmpID").addClass("is-invalid");
+                    empIdInput.addClass("is-invalid");
                     valid = false;
                 }
 
-                // 🔹 Password Match
                 if (password !== confirmPassword) {
                     $("#ConfirmPasswordError").text("Passwords do not match.");
-                    $("#ConfirmPassword").addClass("is-invalid");
-                    valid = false;
-                }
-
-                // 🔹 OTP Verification
-                if (!isOtpVerified) {
-                    showAlert("Please verify your email before registering.", "warning");
+                    confirmPasswordInput.addClass("is-invalid");
                     valid = false;
                 }
 
                 if (!valid) return;
 
-                // ✅ Proceed with Registration
                 $.ajax({
                     url: "/api/Employee/Register",
                     type: "POST",
@@ -255,16 +204,13 @@
                         EmpName: empName,
                         Designation: designation,
                         Dept: dept,
-                        MailID: email,
                         Password: password
                     }),
                     success: function (res) {
                         showAlert(res.message || "Registration successful.", "success");
                         $("#registerForm")[0].reset();
-                        $("#verifyOtpBtn").removeClass("btn-success").addClass("btn-outline-warning")
-                            .html('<i class="fas fa-check-circle"></i> Verify');
-                        isOtpVerified = false;
-                        $("#registerBtn").prop("disabled", true);
+                        registerBtn.prop("disabled", true);
+                        formHint.removeClass("d-none");
                     },
                     error: function (xhr) {
                         showAlert(xhr.responseJSON?.message || "Error occurred while registering.", "danger");
@@ -274,3 +220,10 @@
         });
     </script>
 }
+
+<style>
+    #registerBtn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+</style>

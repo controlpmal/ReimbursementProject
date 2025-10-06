@@ -37,7 +37,7 @@
                 <tr>
                     <th>EmpID</th>
                     <th>Name</th>
-                    <th>Email</th> <!-- New -->
+              
                     <th>Designation</th>
                     <th>Level</th>
                     <th>IRB</th>
@@ -69,10 +69,7 @@
                         <label>Name</label>
                         <input type="text" id="editEmpName" class="form-control">
                     </div>
-                    <div class="mb-2">
-                        <label>Email</label>
-                        <input type="email" id="editMailID" class="form-control">
-                    </div>
+                  
 
                     <div class="mb-2">
                         <label>Password</label>
@@ -142,7 +139,7 @@
                     tr.innerHTML = `
                         <td data-label="EmpID">${emp.empID}</td>
                         <td data-label="Name">${emp.empName}</td>
-                        <td data-label="Email">${emp.mailID || ''}</td> <!-- New -->
+                    
                         <td data-label="Designation">${emp.designation || ''}</td>
                         <td data-label="Level">${emp.level || ''}</td>
                         <td data-label="IRB">${emp.irb || ''}</td>
@@ -227,7 +224,7 @@
 
                 document.getElementById("editEmpID").value = empId;
                 document.getElementById("editEmpName").value = emp.empName;
-                        document.getElementById("editMailID").value = emp.mailID || ''; // New
+          
         document.getElementById("editPassword").value = emp.password || ''; // New
                 document.getElementById("editDesignation").value = emp.designation;
                 document.getElementById("editLevel").value = emp.level;
@@ -246,7 +243,7 @@
                 const empId = document.getElementById("editEmpID").value;
                 const updated = {
                     empName: document.getElementById("editEmpName").value,
-                           mailID: document.getElementById("editMailID").value, // New
+                    
         password: document.getElementById("editPassword").value, // New
                     designation: document.getElementById("editDesignation").value,
                     level: document.getElementById("editLevel").value,
