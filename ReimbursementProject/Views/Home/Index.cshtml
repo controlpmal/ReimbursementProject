@@ -618,7 +618,7 @@
                 const project = $("#projectCode").val().trim();
                 if (!site || !project) { alert("Enter site name and project code."); return; }
                       // show loader before starting request
-        showLoader();
+      showLoader();
 
                 const rows = [];
                 const filesToSend = {};
@@ -633,7 +633,7 @@
                     const fellowsText = $tr.find(".selected-ids").text();
                     const fellowIDs = fellowsText.split(",").map(s => {
                         const m = s.match(/\(([^)]+)\)/);
-                         hideLoader();
+                        
                         return m ? m[1] : "";
                     }).filter(x => x).join(",");
 
@@ -649,12 +649,12 @@
                     if (!claim || claim <= 0) {
                         alert("Claim amount is required for all rows.");
                         valid = false;
-                         hideLoader();return false;
+                        hideLoader(); return false;
                     }
                     if (billType === "with" && (!fileInp.files || !fileInp.files.length)) {
                         alert("Upload Bill is required when Bill Type is 'With Bill'.");
                         valid = false;
-                         hideLoader();return false;
+                      hideLoader();  return false;
                     }
 
                     let fileIndex = null;
@@ -677,8 +677,8 @@
                     });
                 });
 
-                if (!valid)  hideLoader(); return;
-                if (!rows.length) { alert("Add some rows first.");hideLoader(); return; }
+                if (!valid)  return;
+                if (!rows.length) { alert("Add some rows first."); return; }
 
                 const fd = new FormData();
                 fd.append("EmpID", EmpID);
