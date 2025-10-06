@@ -5,72 +5,111 @@
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
+        <div class="col-lg-7 col-md-9">
             <div class="card shadow-lg border-0 rounded-4">
                 <div class="card-header bg-gradient bg-success text-white text-center rounded-top-4">
                     <h4 class="mb-0"><i class="fas fa-user-plus"></i> Employee Registration</h4>
                 </div>
+
                 <div class="card-body p-4">
-                    <div id="registerMessage" class="text-center mb-3 fw-bold"></div>
-                    <form id="registerForm">
+                    <!-- Global Alert -->
+                    <div id="registerAlert" class="alert d-none" role="alert"></div>
+
+                    <form id="registerForm" novalidate>
+                        <!-- Employee ID + Name -->
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-id-badge"></i> Employee ID</label>
-                                <input type="text" id="EmpID" placeholder="Enter Employee ID" class="form-control rounded-pill" required />
+                            <div class="col-md-6 mb-3 position-relative">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-id-badge"></i> Employee ID
+                                </label>
+                                <input type="text" id="EmpID" class="form-control rounded-pill" placeholder="Enter Employee ID" required />
+                                <div class="invalid-feedback" id="EmpIDError"></div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-user"></i> Name</label>
-                                <input type="text" id="EmpName" placeholder="Enter Name" class="form-control rounded-pill" required />
+
+                            <div class="col-md-6 mb-3 position-relative">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-user"></i> Name
+                                </label>
+                                <input type="text" id="EmpName" class="form-control rounded-pill" placeholder="Enter Name" required />
+                                <div class="invalid-feedback" id="EmpNameError"></div>
                             </div>
                         </div>
 
+                        <!-- Designation + Department -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-briefcase"></i> Designation</label>
-                                <input type="text" id="Designation" placeholder="Enter Designation" class="form-control rounded-pill" />
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-briefcase"></i> Designation
+                                </label>
+                                <input type="text" id="Designation" class="form-control rounded-pill" placeholder="Enter Designation" />
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-building-columns"></i> Department</label>
-                                <input type="text" id="Dept" placeholder="Enter Department" class="form-control rounded-pill" />
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-building-columns"></i> Department
+                                </label>
+                                <input type="text" id="Dept" class="form-control rounded-pill" placeholder="Enter Department" />
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-key"></i> Password</label>
-                                <input type="password" id="Password" placeholder="Enter Password" class="form-control rounded-pill" required />
+                        <!-- Email + OTP -->
+                        <div class="row align-items-end">
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-envelope"></i> Email Address
+                                </label>
+                                <input type="email" id="emailID" class="form-control rounded-pill" placeholder="Enter Email" required />
+                                <div class="invalid-feedback" id="EmailError"></div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-semibold"><i class="fas fa-key"></i> Confirm Password</label>
-                                <input type="password" id="ConfirmPassword" placeholder="Confirm Password" class="form-control rounded-pill" required />
+                            <div class="col-md-5 mb-3 text-end">
+                                <button type="button" id="sendOtpBtn" class="btn btn-success rounded-pill py-2 fw-semibold w-100">
+                                    <i class="fas fa-paper-plane"></i> Send OTP
+                                </button>
                             </div>
                         </div>
 
-                        @* <div class="row"> *@
-                        @*     <div class="col mb-3"> *@
-                        @*         <label class="form-label fw-semibold"><i class="fas fa-key"></i> Email Address</label> *@
-                        @*         <input type="text" id="emailID" placeholder="Enter Email" class="form-control rounded-pill" required /> *@
-                        @*     </div> *@
-                        @*     <div class="col mt-4"> *@
-                        @*         <button type="submit" class="btn btn-success rounded-pill py-2 fw-semibold"> *@
-                        @*             <i class="fas fa-paper-plane"></i> send OTP *@
-                        @*         </button> *@
-                        @*     </div> *@
-                        @*     <div class="col mb-3"> *@
-                        @*         <label class="form-label fw-semibold"><i class="fas fa-key"></i> OTP</label> *@
-                        @*         <input type="text" id="otp" placeholder="Enter OTP" class="form-control rounded-pill" required /> *@
-                        @*     </div> *@
-                        @*     <div class="col mt-4"> *@
-                        @*         <button type="submit" class="btn btn-outline-warning rounded-pill py-2 fw-semibold"> *@
-                        @*             <i class="fas fa-paper-plane"></i> Verify *@
-                        @*         </button> *@
-                        @*     </div> *@
-                         
-                        @* </div> *@
+                        <div class="row align-items-end">
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-key"></i> OTP
+                                </label>
+                                <input type="text" id="otp" class="form-control rounded-pill" placeholder="Enter OTP" required />
+                                <div class="invalid-feedback" id="OtpError"></div>
+                            </div>
+                            <div class="col-md-5 mb-3 text-end">
+                                <button type="button" id="verifyOtpBtn" class="btn btn-outline-warning rounded-pill py-2 fw-semibold w-100">
+                                    <i class="fas fa-check-circle"></i> Verify
+                                </button>
+                            </div>
+                        </div>
 
+                        <!-- Password + Confirm Password -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3 position-relative">
+                                <label class="form-label fw-semibold"><i class="fas fa-lock"></i> Password</label>
+                                <div class="input-group">
+                                    <input type="password" id="Password" class="form-control rounded-start-pill" placeholder="Enter Password" required />
+                                    <button class="btn btn-outline-secondary rounded-end-pill" type="button" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="PasswordError"></div>
+                            </div>
 
+                            <div class="col-md-6 mb-3 position-relative">
+                                <label class="form-label fw-semibold"><i class="fas fa-lock"></i> Confirm Password</label>
+                                <div class="input-group">
+                                    <input type="password" id="ConfirmPassword" class="form-control rounded-start-pill" placeholder="Confirm Password" required />
+                                    <button class="btn btn-outline-secondary rounded-end-pill" type="button" id="toggleConfirmPassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="ConfirmPasswordError"></div>
+                            </div>
+                        </div>
+
+                        <!-- Register Button -->
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-success rounded-pill py-2 fw-semibold">
+                            <button type="submit" id="registerBtn" class="btn btn-success rounded-pill py-2 fw-semibold" disabled>
                                 <i class="fas fa-paper-plane"></i> Register
                             </button>
                         </div>
@@ -89,26 +128,124 @@
 
 @section Scripts {
     <script>
+        let generatedOtp = null;
+        let isOtpVerified = false;
+
+        function showAlert(message, type) {
+            const alertBox = $("#registerAlert");
+            alertBox.removeClass("d-none alert-success alert-danger alert-warning");
+            alertBox.addClass("alert-" + type).text(message);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         $(function () {
+            // 👁️ Toggle Password Visibility
+            $("#togglePassword").click(function () {
+                const input = $("#Password");
+                const icon = $(this).find("i");
+                const type = input.attr("type") === "password" ? "text" : "password";
+                input.attr("type", type);
+                icon.toggleClass("fa-eye fa-eye-slash");
+            });
+
+            $("#toggleConfirmPassword").click(function () {
+                const input = $("#ConfirmPassword");
+                const icon = $(this).find("i");
+                const type = input.attr("type") === "password" ? "text" : "password";
+                input.attr("type", type);
+                icon.toggleClass("fa-eye fa-eye-slash");
+            });
+
+            // ✅ Send OTP
+            $("#sendOtpBtn").click(function () {
+                const email = $("#emailID").val().trim();
+                if (!email) {
+                    $("#EmailError").text("Email is required.").show();
+                    $("#emailID").addClass("is-invalid");
+                    return;
+                }
+
+                $("#EmailError").text("");
+                $("#emailID").removeClass("is-invalid");
+
+                $("#sendOtpBtn").prop("disabled", true).text("Sending...");
+
+                $.ajax({
+                    url: `/api/Employee/send?toEmail=${encodeURIComponent(email)}`,
+                    type: "GET",
+                    success: function (res) {
+                        generatedOtp = res.otp || res.OTP;
+                        showAlert("OTP sent successfully to your email.", "success");
+                        $("#sendOtpBtn").text("Resend OTP").prop("disabled", false);
+                    },
+                    error: function (xhr) {
+                        showAlert(xhr.responseJSON?.message || "Failed to send OTP.", "danger");
+                        $("#sendOtpBtn").text("Send OTP").prop("disabled", false);
+                    }
+                });
+            });
+
+            // ✅ Verify OTP
+            $("#verifyOtpBtn").click(function () {
+                const enteredOtp = $("#otp").val().trim();
+
+                if (!generatedOtp) {
+                    showAlert("Please send OTP first!", "warning");
+                    return;
+                }
+
+                if (enteredOtp === generatedOtp) {
+                    isOtpVerified = true;
+                    $("#verifyOtpBtn").removeClass("btn-outline-warning").addClass("btn-success")
+                        .html('<i class="fas fa-check"></i> Verified');
+                    showAlert("Email verified successfully!", "success");
+                    $("#registerBtn").prop("disabled", false);
+                } else {
+                    showAlert("Invalid OTP. Please try again.", "danger");
+                    $("#otp").addClass("is-invalid");
+                    $("#OtpError").text("Invalid OTP entered.");
+                }
+            });
+
+            // ✅ Register Submit
             $("#registerForm").on("submit", function (e) {
                 e.preventDefault();
+                $(".invalid-feedback").text("");
+                $("input").removeClass("is-invalid");
 
                 const empId = $("#EmpID").val().trim();
                 const empName = $("#EmpName").val().trim();
                 const designation = $("#Designation").val().trim();
                 const dept = $("#Dept").val().trim();
+                const email = $("#emailID").val().trim();
                 const password = $("#Password").val().trim();
                 const confirmPassword = $("#ConfirmPassword").val().trim();
-                const msgBox = $("#registerMessage");
 
-                msgBox.removeClass("text-success text-danger").text("");
+                let valid = true;
 
-                // ✅ Check password match
-                if (password !== confirmPassword) {
-                    msgBox.addClass("text-danger").text("Passwords do not match!");
-                    return;
+                // 🔹 Employee ID Validation
+                if (!empId.startsWith("PMA")) {
+                    $("#EmpIDError").text("Employee ID must start with 'PMA'.");
+                    $("#EmpID").addClass("is-invalid");
+                    valid = false;
                 }
 
+                // 🔹 Password Match
+                if (password !== confirmPassword) {
+                    $("#ConfirmPasswordError").text("Passwords do not match.");
+                    $("#ConfirmPassword").addClass("is-invalid");
+                    valid = false;
+                }
+
+                // 🔹 OTP Verification
+                if (!isOtpVerified) {
+                    showAlert("Please verify your email before registering.", "warning");
+                    valid = false;
+                }
+
+                if (!valid) return;
+
+                // ✅ Proceed with Registration
                 $.ajax({
                     url: "/api/Employee/Register",
                     type: "POST",
@@ -118,15 +255,19 @@
                         EmpName: empName,
                         Designation: designation,
                         Dept: dept,
+                        MailID: email,
                         Password: password
                     }),
                     success: function (res) {
-                        msgBox.removeClass("text-danger").addClass("text-success").text(res.message);
+                        showAlert(res.message || "Registration successful.", "success");
                         $("#registerForm")[0].reset();
+                        $("#verifyOtpBtn").removeClass("btn-success").addClass("btn-outline-warning")
+                            .html('<i class="fas fa-check-circle"></i> Verify');
+                        isOtpVerified = false;
+                        $("#registerBtn").prop("disabled", true);
                     },
                     error: function (xhr) {
-                        msgBox.removeClass("text-success").addClass("text-danger")
-                            .text(xhr.responseJSON?.message || "Error occurred");
+                        showAlert(xhr.responseJSON?.message || "Error occurred while registering.", "danger");
                     }
                 });
             });

@@ -243,10 +243,19 @@
 @section Scripts {
     <script>
         $(function () {
+
+              const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, "0");
+            const dd = String(today.getDate()).padStart(2, "0");
+            const maxDate = `${yyyy}-${mm}-${dd}`;
+
+            $("#fromDate, #toDate").attr("max", maxDate);
             const expenseTypesApi = "/api/Employee/expenseTypes";
             const employeesApi = "/api/Employee/employees";
             const expenseLimitsApi = "/api/Employee/expenseLimits";
             const submitApi = "/api/Employee/submit";
+
 
             const EmpID = "@EmpID";
             const Level = "@Level";
@@ -285,50 +294,125 @@
             });
             axios.get(employeesApi).then(res => { employees = res.data || []; });
 
-            // add rows
-            $("#btnAddRange").click(async () => {
-                const from = $("#fromDate").val();
-                const to = $("#toDate").val();
-                const type = $("#expenseTypeSelect").val();
-                if (!from || !type) { alert("Choose from date and expense type."); return; }
 
-                const fromD = new Date(from);
-                const toD = to ? new Date(to) : fromD;
-                if (toD < fromD) { alert("To date cannot be before From date."); return; }
 
-                       for (let dt = new Date(fromD); dt <= toD; dt.setDate(dt.getDate() + 1)) {
-            const dateIso = formatDateIso(dt);
-
-            // ✅ First check duplicates in current page
-            let existsInPage = false;
-            $("#expenseRows .expense-row").each(function () {
-                const d = $(this).find(".date-cell").val();
-                const t = $(this).find(".type-cell").val();
-                if (d === dateIso && t === type) {
-                    existsInPage = true;
-                    return false; // break loop
-                }
-            });
-
-            if (existsInPage) {
-                alert(`Row already exists in page for ${dateIso} (${type}). Skipped.`);
-                continue;
+            //add row
+                    $("#btnAddRange").click(async () => {
+            const from = $("#fromDate").val();
+            const to = $("#toDate").val();
+            const type = $("#expenseTypeSelect").val();
+            if (!from || !type) {
+                alert("Choose from date and expense type.");
+                return;
             }
 
-            // ✅ Then check duplicates in DB
-            try {
-                const res = await axios.get("/api/Employee/check-duplicate", {
-                    params: { empId: EmpID, typeOfExpense: type, dateOfExpense: dateIso }
-                });
-                if (res.data.exists) {
-                    alert(`Duplicate in database for ${dateIso} (${type}). Skipped.`);
-                } else {
-                    addRow(dateIso, type);
-                }
-            } catch (err) { console.error(err); }
-        }
+            const fromD = new Date(from);
+            const toD = to ? new Date(to) : fromD;
+            if (toD < fromD) {
+                alert("To date cannot be before From date.");
+                return;
+            }
 
-            });
+            // ✅ Expense types that can have duplicates
+            const allowDuplicateTypes = ["TRAVEL BIKE/KM", "TRAVEL CAR/KM", "PUBLIC TRANSPORT", "TOLL"];
+
+            for (let dt = new Date(fromD); dt <= toD; dt.setDate(dt.getDate() + 1)) {
+                const dateIso = formatDateIso(dt);
+
+                // ✅ Check if duplicate allowed for this type
+                const isDuplicateAllowed = allowDuplicateTypes.includes(type);
+
+                // ✅ Check duplicates in current page (only if duplicates not allowed)
+                let existsInPage = false;
+                if (!isDuplicateAllowed) {
+                    $("#expenseRows .expense-row").each(function () {
+                        const d = $(this).find(".date-cell").val();
+                        const t = $(this).find(".type-cell").val();
+                        if (d === dateIso && t === type) {
+                            existsInPage = true;
+                            return false; // break loop
+                        }
+                    });
+                }
+
+                if (existsInPage) {
+                    alert(`Row already exists in page for ${dateIso} (${type}). Skipped.`);
+                    continue;
+                }
+
+                // ✅ Check duplicates in DB (only if duplicates not allowed)
+                if (!isDuplicateAllowed) {
+                    try {
+                        const res = await axios.get("/api/Employee/check-duplicate", {
+                            params: { empId: EmpID, typeOfExpense: type, dateOfExpense: dateIso }
+                        });
+                        if (res.data.exists) {
+                            alert(`Duplicate in database for ${dateIso} (${type}). Skipped.`);
+                            continue;
+                        }
+                    } catch (err) {
+                        console.error(err);
+                    }
+                }
+
+                // ✅ Finally add row
+                addRow(dateIso, type);
+            }
+        });
+
+            // add rows
+        //     $("#btnAddRange").click(async () => {
+        //         const from = $("#fromDate").val();
+        //         const to = $("#toDate").val();
+        //         const type = $("#expenseTypeSelect").val();
+        //         if (!from || !type) { alert("Choose from date and expense type."); return; }
+
+        //         const fromD = new Date(from);
+        //         const toD = to ? new Date(to) : fromD;
+        //         if (toD < fromD) { alert("To date cannot be before From date."); return; }
+
+
+        // // ✅ Expense types that can have duplicates
+        // const allowDuplicateTypes = ["TRAVEL BIKE/KM", "TRAVEL CAR/KM", "PUBLIC TRANSPORT", "TOLL"];
+
+        //                for (let dt = new Date(fromD); dt <= toD; dt.setDate(dt.getDate() + 1)) {
+        //     const dateIso = formatDateIso(dt);
+        //           // ✅ Check if duplicate allowed for this type
+        // const isDuplicateAllowed = allowDuplicateTypes.includes(type);
+
+        //    // ✅ Check duplicates in current page (only if duplicates not allowed)
+        // let existsInPage = false;
+        // if (!isDuplicateAllowed) {
+        //     $("#expenseRows .expense-row").each(function () {
+        //         const d = $(this).find(".date-cell").val();
+        //         const t = $(this).find(".type-cell").val();
+        //         if (d === dateIso && t === type) {
+        //             existsInPage = true;
+        //             return false; // break loop
+        //         }
+        //     });
+        // }
+
+
+        //     if (existsInPage) {
+        //         alert(`Row already exists in page for ${dateIso} (${type}). Skipped.`);
+        //         continue;
+        //     }
+
+        //     // ✅ Then check duplicates in DB
+        //     try {
+        //         const res = await axios.get("/api/Employee/check-duplicate", {
+        //             params: { empId: EmpID, typeOfExpense: type, dateOfExpense: dateIso }
+        //         });
+        //         if (res.data.exists) {
+        //             alert(`Duplicate in database for ${dateIso} (${type}). Skipped.`);
+        //         } else {
+        //             addRow(dateIso, type);
+        //         }
+        //     } catch (err) { console.error(err); }
+        // }
+
+        //     });
 
             // add row (card UI)
             function addRow(dateIso, type) {
@@ -549,6 +633,7 @@
                     const fellowsText = $tr.find(".selected-ids").text();
                     const fellowIDs = fellowsText.split(",").map(s => {
                         const m = s.match(/\(([^)]+)\)/);
+                         hideLoader();
                         return m ? m[1] : "";
                     }).filter(x => x).join(",");
 
@@ -563,11 +648,13 @@
 
                     if (!claim || claim <= 0) {
                         alert("Claim amount is required for all rows.");
-                        valid = false; return false;
+                        valid = false;
+                         hideLoader();return false;
                     }
                     if (billType === "with" && (!fileInp.files || !fileInp.files.length)) {
                         alert("Upload Bill is required when Bill Type is 'With Bill'.");
-                        valid = false; return false;
+                        valid = false;
+                         hideLoader();return false;
                     }
 
                     let fileIndex = null;
@@ -590,7 +677,7 @@
                     });
                 });
 
-                if (!valid) return;
+                if (!valid)  hideLoader(); return;
                 if (!rows.length) { alert("Add some rows first.");hideLoader(); return; }
 
                 const fd = new FormData();

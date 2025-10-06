@@ -37,6 +37,7 @@
                 <tr>
                     <th>EmpID</th>
                     <th>Name</th>
+                    <th>Email</th> <!-- New -->
                     <th>Designation</th>
                     <th>Level</th>
                     <th>IRB</th>
@@ -68,6 +69,21 @@
                         <label>Name</label>
                         <input type="text" id="editEmpName" class="form-control">
                     </div>
+                    <div class="mb-2">
+                        <label>Email</label>
+                        <input type="email" id="editMailID" class="form-control">
+                    </div>
+
+                    <div class="mb-2">
+                        <label>Password</label>
+                        <div class="input-group">
+                            <input type="password" id="editPassword" class="form-control">
+                            <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     <div class="mb-2">
                         <label>Designation</label>
                         <input type="text" id="editDesignation" class="form-control">
@@ -126,6 +142,7 @@
                     tr.innerHTML = `
                         <td data-label="EmpID">${emp.empID}</td>
                         <td data-label="Name">${emp.empName}</td>
+                        <td data-label="Email">${emp.mailID || ''}</td> <!-- New -->
                         <td data-label="Designation">${emp.designation || ''}</td>
                         <td data-label="Level">${emp.level || ''}</td>
                         <td data-label="IRB">${emp.irb || ''}</td>
@@ -179,6 +196,18 @@
                 renderTable(filtered);
             }
 
+                    document.getElementById("togglePassword").addEventListener("click", function() {
+            const passInput = document.getElementById("editPassword");
+            if(passInput.type === "password") {
+                passInput.type = "text";
+                this.innerHTML = '<i class="bi bi-eye-slash"></i>';
+            } else {
+                passInput.type = "password";
+                this.innerHTML = '<i class="bi bi-eye"></i>';
+            }
+        });
+
+
             // ✅ Existing functions unchanged (delete, edit modal, update)
             window.deleteEmployee = function(empId, btn) {
                 if(confirm("Are you sure you want to delete this employee?")) {
@@ -198,6 +227,8 @@
 
                 document.getElementById("editEmpID").value = empId;
                 document.getElementById("editEmpName").value = emp.empName;
+                        document.getElementById("editMailID").value = emp.mailID || ''; // New
+        document.getElementById("editPassword").value = emp.password || ''; // New
                 document.getElementById("editDesignation").value = emp.designation;
                 document.getElementById("editLevel").value = emp.level;
                 document.getElementById("editIRB").value = emp.irb;
@@ -215,6 +246,8 @@
                 const empId = document.getElementById("editEmpID").value;
                 const updated = {
                     empName: document.getElementById("editEmpName").value,
+                           mailID: document.getElementById("editMailID").value, // New
+        password: document.getElementById("editPassword").value, // New
                     designation: document.getElementById("editDesignation").value,
                     level: document.getElementById("editLevel").value,
                     irb: document.getElementById("editIRB").value,
