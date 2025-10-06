@@ -35,19 +35,19 @@ namespace ReimbursementProject.Controllers
                
                  if (employee!=null )
                 {
-                    query = query.Where(e => e.IRB == empid && e.Status == "0");
+                    query = query.Where(e => (e.IRB == empid && e.Status == "0")||(e.EmpID == empid && e.Status != "4"));
                 }
                 else if (designation == "HR")
                 {
-                    query = query.Where(e => e.Status == "1");
+                    query = query.Where(e => (e.Status == "1" )|| (e.EmpID == empid && e.Status != "4"));
                 }
                 else if (designation == "AGM")
                 {
-                    query = query.Where(e => e.Status == "2");
+                    query = query.Where(e => (e.Status == "2") || (e.EmpID == empid && e.Status != "4"));
                 }
                 else if (designation == "ACCOUNTS")
                 {
-                    query = query.Where(e => e.Status == "3");
+                    query = query.Where(e => (e.Status == "3") || (e.EmpID == empid && e.Status != "4"));
                 }
                 else
                 {
@@ -77,19 +77,19 @@ namespace ReimbursementProject.Controllers
               
                  if (employee != null)
                 {
-                    query = query.Where(e => e.IRB == empid && e.Status != "0");
+                    query = query.Where(e => (e.IRB == empid && e.Status != "0")||(e.EmpID == empid && e.Status == "4"));
                 }
                 else if (designation == "HR")
                 {
-                    query = query.Where(e => e.Status != "0"&&e.Status!="1" );
+                    query = query.Where(e => (e.Status != "0"&&e.Status!="1") || (e.EmpID == empid && e.Status == "4"));
                 }
                 else if (designation == "AGM")
                 {
-                    query = query.Where(e => e.Status != "0" && e.Status != "1"&&e.Status!="2");
+                    query = query.Where(e => (e.Status != "0" && e.Status != "1"&&e.Status!="2" ) || (e.EmpID == empid && e.Status == "4"));
                 }
                 else if (designation == "ACCOUNTS")
                 {
-                    query = query.Where(e => e.Status == "4");
+                    query = query.Where(e => (e.Status == "4") || (e.EmpID == empid && e.Status != "4"));
                 }
                 else
                 {
@@ -123,19 +123,19 @@ namespace ReimbursementProject.Controllers
             {
                 if (employee != null)
                 {
-                    query = query.Where(e => e.IRB == empid && e.Status == "0");
+                    query = query.Where(e =>(e.IRB == empid && e.Status == "0")||(e.EmpID == empid));
                 }
                 else if (designation == "HR")
                 {
-                    query = query.Where(e => e.Status == "1" );
+                    query = query.Where(e => (e.Status == "1") || (e.EmpID == empid));
                 }
                 else if (designation == "AGM")
                 {
-                    query = query.Where(e => e.Status == "2");
+                    query = query.Where(e => (e.Status == "2") || (e.EmpID == empid));
                 }
                 else if (designation == "ACCOUNTS")
                 {
-                    query = query.Where(e => e.Status == "3"); 
+                    query = query.Where(e => (e.Status == "3") || (e.EmpID == empid)); 
                 }
                 else
                 {
@@ -180,19 +180,19 @@ namespace ReimbursementProject.Controllers
 
                     if (employee != null)
                     {
-                        baseQuery = baseQuery.Where(e => e.IRB == empid && e.Status == "0");
+                        baseQuery = baseQuery.Where(e => (e.IRB == empid && e.Status == "0")||(e.EmpID == empid));
                     }
                     else if (designation == "HR")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "1");
+                        baseQuery = baseQuery.Where(e => (e.Status == "1") || (e.EmpID == empid));
                     }   
                     else if (designation == "AGM")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "2");
+                        baseQuery = baseQuery.Where(e => (e.Status == "2") || (e.EmpID == empid));
                     }
                     else if (designation == "ACCOUNTS")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "3");
+                        baseQuery = baseQuery.Where(e => (e.Status == "3") || (e.EmpID == empid));
                     }
                     else
                     {
@@ -221,19 +221,19 @@ namespace ReimbursementProject.Controllers
 
                     if (employee != null)
                     {
-                        baseQuery = baseQuery.Where(e => e.IRB == empid && e.Status != "0");
+                        baseQuery = baseQuery.Where(e => (e.IRB == empid && e.Status != "0")||(e.EmpID == empid && e.Status == "4"));
                     }
                     else if (designation == "HR")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status != "0" && e.Status!="1");
+                        baseQuery = baseQuery.Where(e => (e.Status != "0" && e.Status!="1") || (e.EmpID == empid && e.Status == "4"));
                     }
                     else if (designation == "AGM")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status != "0" && e.Status != "1" && e.Status != "2");
+                        baseQuery = baseQuery.Where(e => (e.Status != "0" && e.Status != "1" && e.Status != "2") || (e.EmpID == empid && e.Status == "4"));
                     }
                     else if (designation == "ACCOUNTS")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "4");
+                        baseQuery = baseQuery.Where(e => (e.Status == "4") || (e.EmpID == empid && e.Status == "4"));
                     }
                     else
                     {
@@ -262,19 +262,19 @@ namespace ReimbursementProject.Controllers
 
                     if (employee != null)
                     {
-                        baseQuery = baseQuery.Where(e => e.IRB == empid && e.Status == "0");
+                        baseQuery = baseQuery.Where(e => (e.IRB == empid && e.Status == "0")||( e.EmpID==empid && e.Status!="4"));
                     }
                     else if (designation == "HR")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "1");
+                        baseQuery = baseQuery.Where(e => (e.Status == "1") || (e.EmpID == empid && e.Status != "4"));
                     }
                     else if (designation == "AGM")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "2");
+                        baseQuery = baseQuery.Where(e => (e.Status == "2") || (e.EmpID == empid && e.Status != "4"));
                     }
                     else if (designation == "ACCOUNTS")
                     {
-                        baseQuery = baseQuery.Where(e => e.Status == "3");
+                        baseQuery = baseQuery.Where(e => (e.Status == "3") || (e.EmpID == empid && e.Status != "4"));
                     }
                     else
                     {
