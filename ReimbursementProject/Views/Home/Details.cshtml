@@ -173,21 +173,33 @@
         function canAct(irbFromApi) {
             return designation === "HR" || designation === "AGM" || designation === "ACCOUNTS" || empid === irbFromApi;
         }
-                     
-        function renderStatus(status, rejection) {
 
-            if (rejection === 'reject'&&status===0) return 'Rejected by IRB';
-                     if (rejection === 'reject'&&status===1) return 'Rejected by HR';
-                              if (rejection === 'reject'&&status===1) return 'Rejected by AGM';
-                                       if (rejection === 'reject'&&status===0) return 'Rejected by Accounts';
-            if (status === '0') return 'Pending';
-            if (status === '1') return 'Pending at HR';
-            if (status === '2') return 'Pending at AGM';
-            if (status === '3') return 'Pending at Accounts';
-            if (status === '4') return 'Accepted';
-            return status ?? '';
+               function renderStatus(status, rejection) {
+            // Ensure status is compared as string
+            status = String(status ?? '');
+
+            // Handle rejections by each level
+            if (rejection === 'reject') {
+                switch (status) {
+                    case '0': return 'Rejected by IRB';
+                    case '1': return 'Rejected by HR';
+                    case '2': return 'Rejected by AGM';
+                    case '3': return 'Rejected by Accounts';
+                    default:  return 'Rejected';
+                }
+            }
+
+            // Handle normal statuses
+            switch (status) {
+                case '0': return 'Pending at IRB';
+                case '1': return 'Pending at HR';
+                case '2': return 'Pending at AGM';
+                case '3': return 'Pending at Accounts';
+                case '4': return 'Accepted';
+                default:  return status || '';
+            }
         }
-        
+
 
                 function showLoader() {
           document.getElementById("loadingOverlay").style.display = "flex";
