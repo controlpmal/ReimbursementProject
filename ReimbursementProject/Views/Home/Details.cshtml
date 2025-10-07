@@ -163,6 +163,7 @@
         const empid = "@empidClaim";
         const designation = "@designationClaim".toUpperCase();
         const irb = "@irbClaim";
+        const status1="";
 
         // Track row state
         let rowState = {};
@@ -174,6 +175,7 @@
         }
                      
         function renderStatus(status, rejection) {
+
             if (rejection === 'reject') return 'Rejected';
             if (status === '0') return 'Pending';
             if (status === '1') return 'Pending at HR';
@@ -218,7 +220,7 @@
 
                 tr.onclick = () => {
                     ExpenseBillId1 = g.expenseId;
-                    openGroup(g.empID, g.submissionDate, g.projectCode, g.irb);
+                    openGroup(g.empID, g.submissionDate, g.projectCode, g.irb,g.status);
                 };
 
                 tr.innerHTML = `
@@ -303,7 +305,7 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
             }
         }
 
-        async function openGroup(empId, submissionDate, projectCode, irb) {
+        async function openGroup(empId, submissionDate, projectCode, irb,status) {
                     showLoader();
             currentEmpID = empId;
             currentSubmissionDate = submissionDate;
@@ -313,7 +315,7 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
             const d = new Date(submissionDate);
             const dateStr = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, '0') + "-" + String(d.getDate()).padStart(2, '0');
 
-            const res = await axios.get(`/api/dashboard/groupitems?empid=${empId}&submissionDate=${dateStr}&expenseId=${ExpenseBillId1}`);
+            const res = await axios.get(`/api/dashboard/groupitems?empid=${empId}&submissionDate=${dateStr}&expenseId=${ExpenseBillId1}&type=${status}${type}`);
             const items = res.data;
 
             const tbody = document.querySelector('#itemsTable tbody');

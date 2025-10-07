@@ -337,34 +337,49 @@ namespace ReimbursementProject.Controllers
     }
 
         [HttpGet("groupitems")]
-        public async Task<IActionResult> GetGroupItems(string empid, DateTime submissionDate, long expenseId)
+        public async Task<IActionResult> GetGroupItems(string empid, DateTime submissionDate, long expenseId,string type)
         {
             // Normalize empid
-            empid = empid.Trim();
+            var status = type.Substring(0, 1);
+            var types=type.Substring(1);
 
-            var items = await _context.ExpenseLogBook
-                .Where(e => e.EmpID == empid
-                            && e.ExpenseID == expenseId
-                            && e.SubmissionDate.HasValue
-                            && e.SubmissionDate.Value.Date == submissionDate.Date)
-                .OrderBy(e => e.DateofExpense) // ✅ ascending order by date
-                                               // .OrderByDescending(e => e.DateofExpense) // 👈 use this if you want latest first
-                .Select(e => new ExpenseItemDto
-                {
-                    ID = e.ID,
-                    DateOfExpense = e.DateofExpense,
-                    TypeOfExpense = e.TypeOfExpense,
-                    TravelLocation = e.TravelLocation,
-                    Quantity = e.Quantity,
-                    FellowMembers = e.FellowMembers,
-                    ClaimAmount = e.ClaimAmount,
-                    SanctionedAmount = e.SanctionedAmount,
-                    BillDocument = e.BillDocument,
-                    RequireSpecialApproval = e.RequireSpecialApproval,
-                    Status = e.Status,
-                    Rejection = e.Rejection
-                })
-                .ToListAsync();
+            empid = empid.Trim();
+            IQueryable<ExpenseLogBook> baseQuery = _context.ExpenseLogBook;
+            if (type == "rejected")
+            {
+                baseQuery = baseQuery.Where(e => e.EmpID == empid
+                             && e.ExpenseID == expenseId
+                             && e.SubmissionDate.HasValue
+                             && e.Rejection == "reject"
+                             && e.SubmissionDate.Value.Date == submissionDate.Date);
+            }else 
+            {
+                baseQuery = baseQuery.Where(e => e.EmpID == empid
+                           && e.ExpenseID == expenseId
+                           && e.SubmissionDate.HasValue
+                           && e.Rejection != "reject"
+                           && e.SubmissionDate.Value.Date == submissionDate.Date);
+            }
+
+                var items = await baseQuery
+                    .OrderBy(e => e.DateofExpense) // ✅ ascending order by date
+                                                   // .OrderByDescending(e => e.DateofExpense) // 👈 use this if you want latest first
+                    .Select(e => new ExpenseItemDto
+                    {
+                        ID = e.ID,
+                        DateOfExpense = e.DateofExpense,
+                        TypeOfExpense = e.TypeOfExpense,
+                        TravelLocation = e.TravelLocation,
+                        Quantity = e.Quantity,
+                        FellowMembers = e.FellowMembers,
+                        ClaimAmount = e.ClaimAmount,
+                        SanctionedAmount = e.SanctionedAmount,
+                        BillDocument = e.BillDocument,
+                        RequireSpecialApproval = e.RequireSpecialApproval,
+                        Status = e.Status,
+                        Rejection = e.Rejection
+                    })
+                    .ToListAsync();
 
             return Ok(items);
         }

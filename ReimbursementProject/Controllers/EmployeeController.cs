@@ -197,41 +197,41 @@ namespace ReimbursementProject.Controllers
 
 
 
-        [HttpPost("save")]
-        public IActionResult SaveExpenses([FromBody] List<ExpenseLogBook> expenses)
-        {
-            if (expenses == null || !expenses.Any())
-                return BadRequest("No expenses provided.");
-            var lastId = _context.ExpenseLogBook
-                     .OrderByDescending(e => e.ID)
-                     .Select(e => e.ID)
-                     .FirstOrDefault();
+        //[HttpPost("save")]
+        //public IActionResult SaveExpenses([FromBody] List<ExpenseLogBook> expenses)
+        //{
+        //    if (expenses == null || !expenses.Any())
+        //        return BadRequest("No expenses provided.");
+        //    var lastId = _context.ExpenseLogBook
+        //             .OrderByDescending(e => e.ID)
+        //             .Select(e => e.ID)
+        //             .FirstOrDefault();
 
 
-            foreach (var exp in expenses)
-            {
-                exp.SubmissionDate = DateTime.Now;  // current datetime
-                exp.Status = "0";
-                exp.Quantity = exp.Quantity == 0 ? 1 : exp.Quantity;
+        //    foreach (var exp in expenses)
+        //    {
+        //        exp.SubmissionDate = DateTime.Now;  // current datetime
+        //        exp.Status = "0";
+        //        exp.Quantity = exp.Quantity == 0 ? 1 : exp.Quantity;
 
-                // default pending
-            }
+        //        // default pending
+        //    }
 
-            _context.ExpenseLogBook.AddRange(expenses);
-            _context.SaveChanges();
+        //    _context.ExpenseLogBook.AddRange(expenses);
+        //    _context.SaveChanges();
 
-            return Ok(new { message = "Expenses saved successfully!" });
-        }
-        [HttpGet("pendingCount")]
-        public IActionResult GetPendingCount()
-        {
-            var count = _context.ExpenseLogBook
-                .Where(e => e.Status == "0")
-                .GroupBy(e => new { e.EmpID, e.SubmissionDate, e.ProjectCode })
-                .Count();
+        //    return Ok(new { message = "Expenses saved successfully!" });
+        //}
+        //[HttpGet("pendingCount")]
+        //public IActionResult GetPendingCount()
+        //{
+        //    var count = _context.ExpenseLogBook
+        //        .Where(e => e.Status == "0")
+        //        .GroupBy(e => new { e.EmpID, e.SubmissionDate, e.ProjectCode })
+        //        .Count();
 
-            return Ok(count);
-        }
+        //    return Ok(count);
+        //}
 
         // ✅ Register API
         [HttpPost("Register")]
