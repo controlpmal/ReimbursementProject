@@ -345,12 +345,13 @@ namespace ReimbursementProject.Controllers
 
             empid = empid.Trim();
             IQueryable<ExpenseLogBook> baseQuery = _context.ExpenseLogBook;
-            if (type == "rejected")
+            if (types == "rejected")
             {
                 baseQuery = baseQuery.Where(e => e.EmpID == empid
                              && e.ExpenseID == expenseId
                              && e.SubmissionDate.HasValue
                              && e.Rejection == "reject"
+                             && e.Status==status
                              && e.SubmissionDate.Value.Date == submissionDate.Date);
             }else 
             {

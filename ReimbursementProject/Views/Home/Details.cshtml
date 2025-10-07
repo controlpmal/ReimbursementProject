@@ -176,7 +176,10 @@
                      
         function renderStatus(status, rejection) {
 
-            if (rejection === 'reject') return 'Rejected';
+            if (rejection === 'reject'&&status===0) return 'Rejected by IRB';
+                     if (rejection === 'reject'&&status===1) return 'Rejected by HR';
+                              if (rejection === 'reject'&&status===1) return 'Rejected by AGM';
+                                       if (rejection === 'reject'&&status===0) return 'Rejected by Accounts';
             if (status === '0') return 'Pending';
             if (status === '1') return 'Pending at HR';
             if (status === '2') return 'Pending at AGM';
