@@ -100,6 +100,37 @@
         </div>
     </div>
 </div>
+<!-- 🔍 File Viewer Modal -->
+<div class="modal fade" id="fileViewerModal" tabindex="-1" aria-labelledby="fileViewerLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fileViewerLabel">View Bill</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Excel Preview (hidden by default) -->
+                <div id="excelContainer" style="display:none;"></div>
+
+                <!-- Iframe for PDF/Image -->
+                <iframe id="fileViewerFrame" width="100%" height="600px" style="display:none; border:none;"></iframe>
+
+                <!-- Message for unsupported formats -->
+                <div id="unsupportedMsg" class="text-danger text-center mt-3" style="display:none;">
+                    Unsupported file format. Please download manually.
+                  
+
+                </div>
+                <div class="text-center mt-2">
+                    <a id="downloadBtn" href="#" target="_blank" class="btn btn-sm btn-primary" style="display:none;">Download File</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
 <style>
 
     /* Overlay with blur */
@@ -157,6 +188,7 @@
 @section Scripts {
     <script src="~/lib/axios/dist/axios.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
     <script>
         const type = "@type";
@@ -419,9 +451,76 @@ document.getElementById('filterType').addEventListener('change', applyFilter);
             rowState[id].newAmount = parseFloat(val);
         }
 
-        function viewBill(id) {
-            window.open(`/Expenses/ViewBill/${id}`, "_blank");
+                    async function viewBill(id) {
+            showLoader();
+            try {
+                const res = await axios.get(`/api/dashboard/GetBillInfo/${id}`);
+                let { fileUrl, contentType, fileName } = res.data;
+
+                // Normalize MIME type
+                contentType = (contentType || "").toLowerCase().split(";")[0].trim();
+
+                const frame = document.getElementById("fileViewerFrame");
+                const msg = document.getElementById("unsupportedMsg");
+                const excelContainer = document.getElementById("excelContainer");
+                const modalBody = document.querySelector("#fileViewerModal .modal-body");
+                const downloadBtn = document.getElementById("downloadBtn");
+
+                // Reset modal
+                frame.style.display = "none";
+                frame.src = "";
+                excelContainer.style.display = "none";
+                excelContainer.innerHTML = "";
+                msg.style.display = "none";
+                downloadBtn.style.display = "none";
+
+                // ✅ Show download button if fileUrl exists
+                if (fileUrl) {
+                    downloadBtn.href = fileUrl;
+                    downloadBtn.download = fileName || "file";
+                    downloadBtn.style.display = "inline-block";
+                }
+
+                // File type handling
+                if (contentType.includes("spreadsheet") || contentType.includes("excel") || contentType === "text/csv") {
+                    // Hide iframe, show Excel container
+                    excelContainer.style.display = "block";
+
+                    const blobRes = await axios.get(fileUrl, { responseType: "arraybuffer" });
+                    const data = new Uint8Array(blobRes.data);
+                    const workbook = XLSX.read(data, { type: "array" });
+                    const firstSheet = workbook.SheetNames[0];
+                    const html = XLSX.utils.sheet_to_html(workbook.Sheets[firstSheet]);
+
+                    excelContainer.innerHTML = html;
+
+                } else if (contentType.startsWith("image/")) {
+                    frame.style.display = "block";
+                    frame.src = fileUrl;
+
+                } else if (contentType === "application/pdf") {
+                    frame.style.display = "block";
+                    frame.src = fileUrl + "#toolbar=1";
+
+                } else {
+                    msg.style.display = "block"; // unsupported format
+                }
+
+                new bootstrap.Modal(document.getElementById("fileViewerModal")).show();
+
+            } catch (err) {
+                console.error("Error viewing file:", err);
+                alert("Could not open file for viewing.");
+            } finally {
+                hideLoader();
+            }
         }
+
+
+
+
+
+
 
         // Accept group
         document.getElementById('acceptGroupBtn').onclick = async () => {
