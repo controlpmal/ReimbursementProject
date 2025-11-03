@@ -525,20 +525,35 @@ namespace ReimbursementProject.Controllers
             return Ok();
         }
 
+        [HttpGet("GetBillInfo/{id}")]
+        public IActionResult GetBillInfo(int id)
+        {
+            var bill = _context.ExpenseLogBook.FirstOrDefault(e => e.ID == id);
+            if (bill == null || bill.BillDocument == null)
+                return NotFound(new { message = "File not found" });
+
+            // Generate a file access URL for the viewer
+            var fileUrl = Url.Action("ViewBill", "Expenses", new { id = id }, Request.Scheme);
+            return Ok(new
+            {
+                fileUrl,
+                contentType = bill.BillContentType ?? "application/octet-stream",
+                fileName = bill.BillFileName ?? $"bill_{id}"
+            });
+        }
+
 
 
         [HttpGet]
         [Route("/Expenses/ViewBill/{id:long}")]
         public IActionResult ViewBill(int id)
         {
-            var item = _context.ExpenseLogBook.FirstOrDefault(e => e.ID == id);
-            if (item == null || item.BillDocument == null) return NotFound();
+            var bill = _context.ExpenseLogBook.FirstOrDefault(e => e.ID == id);
+            if (bill == null || bill.BillDocument == null)
+                return NotFound();
 
-            string contentType = item.BillContentType ?? "application/octet-stream";
-            string fileName = item.BillFileName ?? "document";
-
-            // return as File so browser handles it properly
-            return File(item.BillDocument, contentType, fileName);
+            // Just return file for inline viewing
+            return File(bill.BillDocument, bill.BillContentType ?? "application/octet-stream");
         }
 
 
